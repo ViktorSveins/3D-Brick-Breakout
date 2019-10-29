@@ -21,6 +21,27 @@ class Point:
     def __sub__(self, other):
         return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
 
+    def __str__(self):
+        return f"x: {self.x}, y: {self.y}, z: {self.z}"
+        
+class Color:
+    def __init__(self, r, g, b, a = 1.0):
+        self.r = r
+        self.g = g
+        self.b = b
+        self.a = a
+
+    def __add__(self, other):
+        return Color(self.r + other.r, self.g + other.g, self.b + other.b, self.a + other.a)
+
+    def __sub__(self, other):
+        return Color(self.r - other.r, self.g - other.g, self.b - other.b, self.a - other.a)
+
+class Line:
+    def __init__(self, point_1, point_2):
+        self.point_1 = point_1
+        self.point_2 = point_2
+
 class Vector:
     def __init__(self, x, y, z):
         self.x = x
@@ -120,7 +141,7 @@ class Cube:
     def set_vertices(self, shader):
         shader.set_position_attribute(self.position_array)
         shader.set_normal_attribute(self.normal_array)
-        shader.set_uv_attribute(self.uv_array)
+        # shader.set_uv_attribute(self.uv_array)
 
     def draw(self, shader):        
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
@@ -130,7 +151,32 @@ class Cube:
         glDrawArrays(GL_TRIANGLE_STRIP, 16, 4)
         glDrawArrays(GL_TRIANGLE_STRIP, 20, 4)
 
-class Dice(Cube):
-    def __init__(self):
-        super().__init__()
-                        
+class Sphere:
+    def __init__(self, stacks = 12, slices = 24):
+        self.vertex_array = []
+        self.slices = slices
+        stack_interval = pi / stacks
+        slice_interval = 2.0 * pi / slices
+        self.vertex_count = 0
+
+        for stack_count in range(stacks):
+            stack_angle = stack_count * stack_interval
+            for slice_count in range(slices + 1):
+                slice_angle = slice_count * slice_interval
+                self.vertex_array.append(sin(stack_angle) * cos(slice_angle))
+                self.vertex_array.append(cos(stack_angle))
+                self.vertex_array.append(sin(stack_angle) * sin(slice_angle))
+                
+                self.vertex_array.append(sin(stack_angle + stack_interval) * cos(slice_angle))
+                self.vertex_array.append(cos(stack_angle + stack_interval))
+                self.vertex_array.append(sin(stack_angle + stack_interval) * sin(slice_angle))
+
+                self.vertex_count += 2
+    
+    def set_vertices(self, shader):
+        shader.set_position_attribute(self.vertex_array)
+        shader.set_normal_attribute(self.vertex_array)
+
+    def draw(self, shader):
+        for i in range(0, self.vertex_count, (self.slices + 1) * 2):
+            glDrawArrays(GL_TRIANGLE_STRIP, i, (self.slices + 1) * 2)

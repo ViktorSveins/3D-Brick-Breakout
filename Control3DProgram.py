@@ -13,6 +13,7 @@ from random import randint
 from Shaders import *
 from Matrices import *
 from Base3DObjects import *
+from Game3DObjects import *
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -52,6 +53,11 @@ class GraphicsProgram3D:
         self.z_key_down = False
         self.x_key_down = False
 
+        
+        self.brick = Brick(Point(0, 10, 0), 4, 5, Color(1.0, 0.0, 0.0))
+        self.ball = Ball(Point(0.0, 0.0, 0.0), 2.0)
+        self.ball.motion = Vector(0, 1, 0)
+
     def load_texture(self, path_string):
         surface = pygame.image.load(sys.path[0] + path_string)
         tex_string = pygame.image.tostring(surface, "RGBA", 1)
@@ -69,6 +75,12 @@ class GraphicsProgram3D:
 
         self.angle += pi * delta_time
         # #     angle -= (2 * pi)
+
+        self.ball.update(delta_time)
+        col = self.brick.collision(self.ball.pos, self.ball.radius, self.ball.motion, delta_time)
+        if(col):
+            print("COLLISION!")
+            self.ball.motion = self.brick.reflection(self.ball.motion)
 
         if self.UP_key_down:
             self.view_matrix.pitch((pi / 2) * delta_time)
@@ -111,6 +123,9 @@ class GraphicsProgram3D:
 
         glViewport(0, 0, 800, 600)
 
+        glClearColor(1.0, 1.0, 0.0, 1.0)
+
+
 
         self.projection_matrix.set_perspective(self.fov, 800 / 600, 0.5, 100)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
@@ -128,7 +143,19 @@ class GraphicsProgram3D:
         
         self.model_matrix.load_identity()
 
+        # self.shader.set_mat_diffuse(1.0, 1.0, 1.0)
+        # self.model_matrix.add_scale(3.0, 3.0, 3.0)
+        # cube = Cube()
+        # cube.set_vertices(self.shader)
+        # self.shader.set_model_matrix(self.model_matrix.matrix)
+        # cube.draw(self.shader)
 
+        
+        self.ball.set_vertices(self.shader)
+        self.ball.display(self.model_matrix, self.shader)
+
+        self.brick.set_vertices(self.shader)
+        self.brick.display(self.model_matrix, self.shader)
 
 
         pygame.display.flip()
