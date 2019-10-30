@@ -121,7 +121,7 @@ class LineObstacle(Line):
         else:    
             t_hit = self.normal_vector.dot(self.point_2 - closestPointOnCircle) / normalDot
 
-        if t_hit > 0 and t_hit <= delta_time:
+        if t_hit >= 0 and t_hit <= delta_time:
             p_hit = closestPointOnCircle + ball.motion * t_hit
 
             if self.point_1.x < self.point_2.x:

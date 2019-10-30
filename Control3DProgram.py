@@ -27,7 +27,7 @@ class GraphicsProgram3D:
         self.model_matrix = ModelMatrix()
 
         self.view_matrix = ViewMatrix()
-        self.view_matrix.look(Point(0, 9.5, 10), Point(0, 9.5, 0), Vector(0, 1, 0))
+        self.view_matrix.look(Point(0, 9.5, 20), Point(0, 9.5, 0), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.projection_matrix = ProjectionMatrix()
@@ -59,7 +59,7 @@ class GraphicsProgram3D:
         self.brick2 = Brick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0))
         self.brick3 = Brick(Point(1, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
         self.ball = Ball(Point(10.0, 0.0, 0.0), 1)
-        self.ball.motion = Vector(-1, 0.95, 0)
+        self.ball.motion = Vector(-20, 19, 0)
 
         self.pauseTime = 0.0
 
