@@ -56,6 +56,8 @@ class GraphicsProgram3D:
 
         
         self.brick = Brick(Point(0, 10, 0), 3, 1, Color(1.0, 0.0, 0.0))
+        self.brick2 = Brick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0))
+        self.brick3 = Brick(Point(1, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
         self.ball = Ball(Point(10.0, 0.0, 0.0), 1)
         self.ball.motion = Vector(-1, 0.95, 0)
 
@@ -83,6 +85,8 @@ class GraphicsProgram3D:
         
         self.ball.update(delta_time)
         self.ball = self.brick.collision(self.ball, delta_time)
+        self.ball = self.brick2.collision(self.ball, delta_time)
+        self.ball = self.brick3.collision(self.ball, delta_time)
 
         if self.UP_key_down:
             self.view_matrix.pitch((pi / 2) * delta_time)
@@ -158,6 +162,8 @@ class GraphicsProgram3D:
 
         self.brick.set_vertices(self.shader)
         self.brick.display(self.model_matrix, self.shader)
+        self.brick2.display(self.model_matrix, self.shader)
+        self.brick3.display(self.model_matrix, self.shader)
 
 
         pygame.display.flip()
