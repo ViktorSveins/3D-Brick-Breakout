@@ -27,7 +27,7 @@ class GraphicsProgram3D:
         self.model_matrix = ModelMatrix()
 
         self.view_matrix = ViewMatrix()
-        self.view_matrix.look(Point(0, 9.5, -5), Point(0, 9.5, 0), Vector(0, 1, 0))
+        self.view_matrix.look(Point(0, 9.5, 10), Point(0, 9.5, 0), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.projection_matrix = ProjectionMatrix()
@@ -55,8 +55,8 @@ class GraphicsProgram3D:
 
         
         self.brick = Brick(Point(0, 10, 0), 1, 1, Color(1.0, 0.0, 0.0))
-        self.ball = Ball(Point(0.0, 0.0, 0.0), 1)
-        self.ball.motion = Vector(0, 1, 0)
+        self.ball = Ball(Point(10.0, 0.0, 0.0), 1)
+        self.ball.motion = Vector(-1, 0.95, 0)
 
     def load_texture(self, path_string):
         surface = pygame.image.load(sys.path[0] + path_string)
@@ -75,7 +75,7 @@ class GraphicsProgram3D:
 
         self.angle += pi * delta_time
         # #     angle -= (2 * pi)
-
+        
         self.ball.update(delta_time)
         col = self.brick.collision(self.ball.pos, self.ball.radius, self.ball.motion, delta_time)
         if(col):
