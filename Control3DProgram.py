@@ -27,7 +27,7 @@ class GraphicsProgram3D:
         self.model_matrix = ModelMatrix()
 
         self.view_matrix = ViewMatrix()
-        self.view_matrix.look(Point(0, 9.5, -5), Point(0, 9.5, 0), Vector(0, 1, 0))
+        self.view_matrix.look(Point(0, 9.5, 10), Point(0, 9.5, 0), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.projection_matrix = ProjectionMatrix()
@@ -52,11 +52,12 @@ class GraphicsProgram3D:
         self.e_key_down = False
         self.z_key_down = False
         self.x_key_down = False
+        self.pause_game = False
 
         
         self.brick = Brick(Point(0, 10, 0), 1, 1, Color(1.0, 0.0, 0.0))
-        self.ball = Ball(Point(0.0, 0.0, 0.0), 1)
-        self.ball.motion = Vector(0, 1, 0)
+        self.ball = Ball(Point(10.0, 0.0, 0.0), 1)
+        self.ball.motion = Vector(-1, 0.95, 0)
 
     def load_texture(self, path_string):
         surface = pygame.image.load(sys.path[0] + path_string)
@@ -71,49 +72,52 @@ class GraphicsProgram3D:
         return tex_id
 
     def update(self):
-        delta_time = self.clock.tick() / 1000.0
+        if self.pause_game:
+            pass
+        else:
+            delta_time = self.clock.tick() / 1000.0
 
-        self.angle += pi * delta_time
-        # #     angle -= (2 * pi)
+            self.angle += pi * delta_time
+            # #     angle -= (2 * pi)
 
-        self.ball.update(delta_time)
-        col = self.brick.collision(self.ball.pos, self.ball.radius, self.ball.motion, delta_time)
-        if(col):
-            print("COLLISION!")
-            self.ball.motion = self.brick.reflection(self.ball.motion)
+            self.ball.update(delta_time)
+            self.ball = self.brick.collision(self.ball, delta_time)
+            # if(col):
+            #     print("COLLISION!")
+            #     self.ball.motion = self.brick.reflection(self.ball.motion)
 
-        if self.UP_key_down:
-            self.view_matrix.pitch((pi / 2) * delta_time)
-        if self.DOWN_key_down:
-            self.view_matrix.pitch(-(pi / 2) * delta_time)
-        if self.LEFT_key_down:
-            self.view_matrix.yaw(-(pi / 2) * delta_time)
-        if self.RIGHT_key_down:
-            self.view_matrix.yaw((pi / 2) * delta_time)
+            if self.UP_key_down:
+                self.view_matrix.pitch((pi / 2) * delta_time)
+            if self.DOWN_key_down:
+                self.view_matrix.pitch(-(pi / 2) * delta_time)
+            if self.LEFT_key_down:
+                self.view_matrix.yaw(-(pi / 2) * delta_time)
+            if self.RIGHT_key_down:
+                self.view_matrix.yaw((pi / 2) * delta_time)
 
-        if self.w_key_down:
-            self.view_matrix.slide(0, 0, -3 * delta_time)
-        if self.s_key_down:
-            self.view_matrix.slide(0, 0, 3 * delta_time)
-        if self.a_key_down:
-            self.view_matrix.slide(-3 * delta_time, 0, 0)
-        if self.d_key_down:
-            self.view_matrix.slide(3 * delta_time, 0, 0)
+            if self.w_key_down:
+                self.view_matrix.slide(0, 0, -3 * delta_time)
+            if self.s_key_down:
+                self.view_matrix.slide(0, 0, 3 * delta_time)
+            if self.a_key_down:
+                self.view_matrix.slide(-3 * delta_time, 0, 0)
+            if self.d_key_down:
+                self.view_matrix.slide(3 * delta_time, 0, 0)
 
-        if self.q_key_down:
-            self.view_matrix.roll((pi / 2) * delta_time)
-        if self.e_key_down:
-            self.view_matrix.roll(-(pi / 2) * delta_time)
+            if self.q_key_down:
+                self.view_matrix.roll((pi / 2) * delta_time)
+            if self.e_key_down:
+                self.view_matrix.roll(-(pi / 2) * delta_time)
 
-        if self.z_key_down:
-            self.view_matrix.slide(0, -1 * delta_time, 0)            
-        if self.x_key_down:
-            self.view_matrix.slide(0, 1 * delta_time, 0)
+            if self.z_key_down:
+                self.view_matrix.slide(0, -1 * delta_time, 0)            
+            if self.x_key_down:
+                self.view_matrix.slide(0, 1 * delta_time, 0)
 
-        if self.t_key_down:
-            self.fov += 0.25 * delta_time
-        if self.g_key_down:
-            self.fov -= 0.25 * delta_time
+            if self.t_key_down:
+                self.fov += 0.25 * delta_time
+            if self.g_key_down:
+                self.fov -= 0.25 * delta_time
             
 
     def display(self):
@@ -202,6 +206,8 @@ class GraphicsProgram3D:
                         self.z_key_down = True
                     if event.key == K_x:
                         self.x_key_down = True
+                    if event.key == K_p:
+                        self.pause_game = not self.pause_game
                         
                 elif event.type == pygame.KEYUP:
                     if event.key == K_UP:
