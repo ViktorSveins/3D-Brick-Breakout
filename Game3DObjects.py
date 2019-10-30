@@ -17,8 +17,8 @@ class Brick(Cube):
         self.sides = []
         self.sides.append(LineObstacle(self.corner_1, self.corner_2))
         self.sides.append(LineObstacle(self.corner_2, self.corner_3))
-        self.sides.append(LineObstacle(self.corner_3, self.corner_4))
-        self.sides.append(LineObstacle(self.corner_4, self.corner_1))
+        self.sides.append(LineObstacle(self.corner_4, self.corner_3))
+        self.sides.append(LineObstacle(self.corner_1, self.corner_4))
 
         self.collision_side = 0
 
@@ -37,7 +37,12 @@ class Brick(Cube):
         #     if side.collision(c_position, radius, c_motion, delta_time):
         #         self.collision_side = i
         #         return True
+<<<<<<< HEAD
         if self.sides[2].collision(c_position, radius, c_motion, delta_time):
+=======
+        if self.sides[3].collision(c_position, radius, c_motion, delta_time):
+            self.collision_side = 3
+>>>>>>> 6973fa2ae7dddd018ab14f82c6fa03e5f0258862
             return True
         return False
 
@@ -89,10 +94,16 @@ class LineObstacle(Line):
         length = sqrt(distX**2 + distY**2)
         # print(f"point1: ({self.point_1}), point2: ({self.point_2}), length: {length}")
         
+<<<<<<< HEAD
         dotproduct = ( ((ball.pos.x - self.point_1.x) * (self.point_2.x - self.point_1.x))
                      + ((ball.pos.y - self.point_1.y) * (self.point_2.y - self.point_1.y)) ) / length**2
         # print(f"dotproduct: {dotproduct}")
 
+=======
+        dotproduct = ( ((c_position.x - self.point_1.x) * (self.point_2.x - self.point_1.x))
+                     + ((c_position.y - self.point_1.y) * (self.point_2.y - self.point_1.y)) ) / (length**2)
+        
+>>>>>>> 6973fa2ae7dddd018ab14f82c6fa03e5f0258862
         closestPointOnLine = Point(self.point_1.x + dotproduct * (self.point_2.x - self.point_1.x), 
                                    self.point_1.y + dotproduct * (self.point_2.y - self.point_1.y), 0)
         # print(f"closest point on line: {closestPointOnLine}")
@@ -107,19 +118,30 @@ class LineObstacle(Line):
         #     print(f"closest point on line: {closestPointOnLine}")
         #     print(f"Closest point on Circle: {closestPointOnCircle}")
        
+<<<<<<< HEAD
         normalDot = self.normal_vector.dot(ball.motion)
+=======
+        # print(f"CIRCLE: {closestPointOnCircle}")
+        # print(f"LINE: {closestPointOnLine}")
+
+        normalDot = self.normal_vector.dot(c_motion)
+>>>>>>> 6973fa2ae7dddd018ab14f82c6fa03e5f0258862
         if(normalDot == 0):
             t_hit = 0
         else:    
             t_hit = self.normal_vector.dot(self.point_2 - closestPointOnCircle) / normalDot
 
         if t_hit > 0 and t_hit <= delta_time:
+<<<<<<< HEAD
             p_hit = closestPointOnCircle + ball.motion * t_hit
             # print(f"tHit: {t_hit}")
             # print(f"pHit: cirlceP({closestPointOnCircle}) + Cmotion({c_motion.x}, {c_motion.y}, {c_motion.z}) * tHit({t_hit}) = {p_hit}")
             print(f"pHit")
             print(f"closest point on circ: {closestPointOnCircle}")
             print(f"closest point on line: {closestPointOnLine}")
+=======
+            p_hit = closestPointOnCircle + c_motion * t_hit
+>>>>>>> 6973fa2ae7dddd018ab14f82c6fa03e5f0258862
 
             if self.point_1.x < self.point_2.x:
                 x_min, x_max = self.point_1.x, self.point_2.x
@@ -131,11 +153,28 @@ class LineObstacle(Line):
             else:
                 y_min, y_max = self.point_2.y, self.point_1.y
 
+<<<<<<< HEAD
             if p_hit.x >= x_min and p_hit.x <= x_max and p_hit.y >= y_min and p_hit.y <= y_max:
                 ball.pos = p_hit
                 ball.motion = self.reflection(ball.motion)
                 return ball
         return ball
+=======
+            print(f"dotproduct = {dotproduct}")
+            # print(f"PHIT = {p_hit}")
+            # print(f"PHIT = {p_hit}")
+            
+            print(f"PHIT = {p_hit}")
+            print(f"xmin = {x_min}, ymin = {y_min}")
+            print(f"xmax = {x_max}, ymax = {y_max}")
+            print("----")
+            print(f"CIRCLE: {closestPointOnCircle}")
+            print(f"LINE: {closestPointOnLine}")
+
+            return p_hit.x >= x_min and p_hit.x <= x_max and p_hit.y >= y_min and p_hit.y <= y_max
+        else:    
+            return False
+>>>>>>> 6973fa2ae7dddd018ab14f82c6fa03e5f0258862
     
     def reflection(self, c_motion):
         return c_motion - self.normal_vector * (c_motion.dot(self.normal_vector) / (self.normal_vector.dot(self.normal_vector))) * 2
