@@ -59,6 +59,8 @@ class GraphicsProgram3D:
         self.ball = Ball(Point(10.0, 0.0, 0.0), 1)
         self.ball.motion = Vector(-1, 0.95, 0)
 
+        self.pauseTime = 0.0
+
     def load_texture(self, path_string):
         surface = pygame.image.load(sys.path[0] + path_string)
         tex_string = pygame.image.tostring(surface, "RGBA", 1)
@@ -73,6 +75,8 @@ class GraphicsProgram3D:
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
+        if self.pause_game:
+            return
 
         self.angle += pi * delta_time
         # #     angle -= (2 * pi)
