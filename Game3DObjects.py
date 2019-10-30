@@ -107,7 +107,7 @@ class LineObstacle(Line):
 
         vector = Vector(ball.pos.x - closestPointOnLine.x, ball.pos.y - closestPointOnLine.y, 0)
 
-        
+        traversal = Vector(0.0, 0.0, 0.0)
         if vector.length() == 0:
             closestPointOnCircle = closestPointOnLine
         else:
