@@ -16,11 +16,13 @@ class OneHitBrick(Brick):
                 self.currentHits += 1
 
     def display(self, model_matrix, shader):
-        # if self.currentHits != 0:
-        #     shader.set_using_tex(1.0)
-        #     glActiveTexture(GL_TEXTURE0)
-        #     glBindTexture(GL_TEXTURE_2D, self.textures[self.currentHits - 1])
-        #     shader.set_dif_tex(0)
-        #     shader.set_using_tex(0.0)
+        # print(f"Collide: {self.collided}")
+        if self.currentHits != 0:
+            # print("adding textures")
+            shader.set_using_tex(1.0)
+            glActiveTexture(GL_TEXTURE0)
+            glBindTexture(GL_TEXTURE_2D, self.textures[0])
+            shader.set_dif_tex(0)
+            shader.set_using_tex(0.0)
 
         super().display(model_matrix, shader)

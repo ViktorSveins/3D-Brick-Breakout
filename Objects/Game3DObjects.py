@@ -120,11 +120,11 @@ class LineObstacle(Line):
         vectorToCorner = point - ball.pos
         vecLength = vectorToCorner.length()
         vectorToCorner.normalize()
+        newBall = Ball(Point(0,0,0), ball.size, ball.color)
+        newBall.pos = ball.pos - vectorToCorner * (ball.radius - vecLength)
+        newBall.motion = self.reflection(ball.motion)
 
-        ball.pos = ball.pos - vectorToCorner * (ball.radius - vecLength)
-        ball.motion = self.reflection(ball.motion)
-
-        return ball
+        return newBall
 
     def collision(self, ball, delta_time):
 
@@ -168,9 +168,10 @@ class LineObstacle(Line):
         if t_hit > 0 and t_hit <= delta_time:
             p_hit = closestPointOnCircle + ball.motion * t_hit
             if self.pointInLineRange(p_hit):
-                ball.pos = p_hit + traversal
-                ball.motion = self.reflection(ball.motion)
-                return ball
+                newBall = Ball(Point(0,0,0), ball.size, ball.color)
+                newBall.pos = p_hit + traversal
+                newBall.motion = self.reflection(ball.motion)
+                return newBall
         return ball
     
     def reflection(self, c_motion):

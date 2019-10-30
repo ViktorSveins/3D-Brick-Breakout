@@ -144,8 +144,8 @@ class GraphicsProgram3D:
         self.shader.set_eye_position(self.view_matrix.eye)
 
         self.shader.set_view_matrix((self.view_matrix.get_matrix()))
-        # self.shader.set_light_position(Point(3.0, 10.0, 6.0))
-        self.shader.set_light_position(self.view_matrix.eye)
+        self.shader.set_light_position(Point(3.0, 10.0, 6.0))
+        # self.shader.set_light_position(self.view_matrix.eye)
         self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_specular(1.0, 1.0, 1.0)
 
@@ -166,14 +166,9 @@ class GraphicsProgram3D:
         self.ball.display(self.model_matrix, self.shader)
 
         self.brick.set_vertices(self.shader)
-        self.shader.set_using_tex(1.0)
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.textures[0])
-        self.shader.set_dif_tex(0)
 
         self.brick.display(self.model_matrix, self.shader)
         self.brick2.display(self.model_matrix, self.shader)
-        self.shader.set_using_tex(0.0)
 
 
         pygame.display.flip()
