@@ -1,4 +1,4 @@
-from Base3DObjects import *
+from Objects.Base3DObjects import *
 
 class Brick(Cube):
     def __init__(self, position, width, height, color):
@@ -8,6 +8,7 @@ class Brick(Cube):
         self.h = height
         self.l = 5
         self.color = color
+        self.collided = False
 
         self.corner_1 = Point(self.pos.x - self.w / 2, self.pos.y - self.h /2, 0)
         self.corner_2 = Point(self.pos.x - self.w / 2, self.pos.y + self.h /2, 0)
@@ -49,6 +50,7 @@ class Brick(Cube):
         for side in self.sides:
             collidedBall = side.collision(ball, delta_time)
             if collidedBall != ball:
+                self.collided = True
                 return collidedBall
         return ball
 

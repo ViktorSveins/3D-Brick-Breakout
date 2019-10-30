@@ -12,8 +12,8 @@ from random import randint
 
 from Shaders import *
 from Matrices import *
-from Base3DObjects import *
-from Game3DObjects import *
+from Objects.Base3DObjects import *
+from Objects.Game3DObjects import *
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -62,6 +62,8 @@ class GraphicsProgram3D:
         self.ball.motion = Vector(-1.75, 1, 0)
 
         self.pauseTime = 0.0
+
+        # self.texture_id01 = self.load_texture(sys.path[0] + "/textures/metalwall.png")
 
     def load_texture(self, path_string):
         surface = pygame.image.load(sys.path[0] + path_string)
