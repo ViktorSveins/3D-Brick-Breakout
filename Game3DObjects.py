@@ -33,11 +33,24 @@ class Brick(Cube):
         model_matrix.pop_matrix()
         
     def collision(self, ball, delta_time):
-        # for i,side in enumerate(self.sides):
-        #     if side.collision(c_position, radius, c_motion, delta_time):
-        #         self.collision_side = i
-        #         return True
-        return self.sides[3].collision(ball, delta_time)
+        # Optimize to only check the sides facing the ball
+        sidesToCheck = []
+
+        if ball.pos.x < self.pos.x:
+            sidesToCheck.append(self.sides[0])
+        else:
+            sidesToCheck.append(self.sides[2])
+
+        if ball.pos.y < self.pos.y:
+            sidesToCheck.append(self.sides[3])
+        else:
+            sidesToCheck.append(self.sides[1])
+
+        for i,side in enumerate(sidesToCheck):
+            collidedBall = side.collision(ball, delta_time)
+            if collidedBall != ball:
+                return collidedBall
+        return ball
 
     def reflection(self, c_motion):
         return self.sides[self.collision_side].reflection(c_motion)
@@ -85,38 +98,19 @@ class LineObstacle(Line):
         distY = self.point_1.y - self.point_2.y
         
         length = sqrt(distX**2 + distY**2)
-        # print(f"point1: ({self.point_1}), point2: ({self.point_2}), length: {length}")
         
         dotproduct = ( ((ball.pos.x - self.point_1.x) * (self.point_2.x - self.point_1.x))
                      + ((ball.pos.y - self.point_1.y) * (self.point_2.y - self.point_1.y)) ) / length**2
-        # print(f"dotproduct: {dotproduct}")
 
         closestPointOnLine = Point(self.point_1.x + dotproduct * (self.point_2.x - self.point_1.x), 
                                    self.point_1.y + dotproduct * (self.point_2.y - self.point_1.y), 0)
 
         vector = Vector(ball.pos.x - closestPointOnLine.x, ball.pos.y - closestPointOnLine.y, 0)
-        #!################## TEMP #################
-        #?#########################################
-        # if sqrt(vector.x * vector.x + vector.y * vector.y) <= ball.radius:
-        #     print(f"closest point on line: {closestPointOnLine}")
-        #     vector.normalize()
-        #     traversal = vector * ball.radius
-        #     closestPointOnCircle = Point(ball.pos.x - traversal.x, ball.pos.y - traversal.y, 0)    
-        #     print(f"closest point on circle: {closestPointOnCircle}")
-        #     ball.pos = closestPointOnCircle + traversal
-        #     ball.motion = self.reflection(ball.motion)
-        # return ball
-        #?#########################################
-        #!#########################################
 
         vector.normalize()
 
         traversal = vector * ball.radius
         closestPointOnCircle = Point(ball.pos.x - traversal.x, ball.pos.y - traversal.y, 0)
-        # print(f"Closest point on Circle: {closestPointOnCircle}")
-        # if c_position.x > 0.49 and c_position.x < 0.51:
-        #     print(f"closest point on line: {closestPointOnLine}")
-        #     print(f"Closest point on Circle: {closestPointOnCircle}")
        
         normalDot = self.normal_vector.dot(ball.motion)
         if(normalDot == 0):
@@ -126,11 +120,6 @@ class LineObstacle(Line):
 
         if t_hit > 0 and t_hit <= delta_time:
             p_hit = closestPointOnCircle + ball.motion * t_hit
-            # print(f"tHit: {t_hit}")
-            # print(f"pHit: cirlceP({closestPointOnCircle}) + Cmotion({c_motion.x}, {c_motion.y}, {c_motion.z}) * tHit({t_hit}) = {p_hit}")
-            print(f"pHit")
-            print(f"closest point on circ: {closestPointOnCircle}")
-            print(f"closest point on line: {closestPointOnLine}")
 
             if self.point_1.x < self.point_2.x:
                 x_min, x_max = self.point_1.x, self.point_2.x
