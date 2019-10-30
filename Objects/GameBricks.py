@@ -21,8 +21,8 @@ class OneHitBrick(Brick):
             # print("adding textures")
             shader.set_using_tex(1.0)
             glActiveTexture(GL_TEXTURE0)
-            glBindTexture(GL_TEXTURE_2D, self.textures[0])
+            glBindTexture(GL_TEXTURE_2D, self.textures[self.currentHits - 1])
             shader.set_dif_tex(0)
-            shader.set_using_tex(0.0)
 
         super().display(model_matrix, shader)
+        shader.set_using_tex(0.0)
