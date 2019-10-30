@@ -1,7 +1,7 @@
 
 from math import * # trigonometry
 
-from Base3DObjects import *
+from Objects.Base3DObjects import *
 
 class ModelMatrix:
     def __init__(self):

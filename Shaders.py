@@ -3,7 +3,6 @@ from OpenGL.GL import *
 from math import * # trigonometry
 
 import sys
-from Base3DObjects import *
 
 class Shader3D:
     def __init__(self):

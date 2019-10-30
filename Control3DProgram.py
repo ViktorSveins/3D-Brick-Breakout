@@ -12,8 +12,8 @@ from random import randint
 
 from Shaders import *
 from Matrices import *
-from Base3DObjects import *
-from Game3DObjects import *
+from Objects.Base3DObjects import *
+from Objects.Game3DObjects import *
 
 class GraphicsProgram3D:
     def __init__(self):
