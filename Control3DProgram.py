@@ -166,14 +166,7 @@ class GraphicsProgram3D:
         
         self.model_matrix.load_identity()
 
-        # self.shader.set_mat_diffuse(1.0, 1.0, 1.0)
-        # self.model_matrix.add_scale(3.0, 3.0, 3.0)
-        # cube = Cube()
-        # cube.set_vertices(self.shader)
-        # self.shader.set_model_matrix(self.model_matrix.matrix)
-        # cube.draw(self.shader)
 
-        
         self.ball.set_vertices(self.shader)
         self.ball.display(self.model_matrix, self.shader)
 
