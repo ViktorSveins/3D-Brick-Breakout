@@ -91,11 +91,24 @@ class LineObstacle(Line):
                      + ((ball.pos.y - self.point_1.y) * (self.point_2.y - self.point_1.y)) ) / length**2
         # print(f"dotproduct: {dotproduct}")
 
-        closestPointOnLine = Point(self.point_1.x - dotproduct * (self.point_2.x - self.point_1.x), 
-                                   self.point_1.y - dotproduct * (self.point_2.y - self.point_1.y), 0)
-        # print(f"closest point on line: {closestPointOnLine}")
+        closestPointOnLine = Point(self.point_1.x + dotproduct * (self.point_2.x - self.point_1.x), 
+                                   self.point_1.y + dotproduct * (self.point_2.y - self.point_1.y), 0)
 
         vector = Vector(ball.pos.x - closestPointOnLine.x, ball.pos.y - closestPointOnLine.y, 0)
+        #!################## TEMP #################
+        #?#########################################
+        # if sqrt(vector.x * vector.x + vector.y * vector.y) <= ball.radius:
+        #     print(f"closest point on line: {closestPointOnLine}")
+        #     vector.normalize()
+        #     traversal = vector * ball.radius
+        #     closestPointOnCircle = Point(ball.pos.x - traversal.x, ball.pos.y - traversal.y, 0)    
+        #     print(f"closest point on circle: {closestPointOnCircle}")
+        #     ball.pos = closestPointOnCircle + traversal
+        #     ball.motion = self.reflection(ball.motion)
+        # return ball
+        #?#########################################
+        #!#########################################
+
         vector.normalize()
 
         traversal = vector * ball.radius
@@ -130,7 +143,7 @@ class LineObstacle(Line):
                 y_min, y_max = self.point_2.y, self.point_1.y
 
             if p_hit.x >= x_min and p_hit.x <= x_max and p_hit.y >= y_min and p_hit.y <= y_max:
-                ball.pos = p_hit
+                ball.pos = p_hit + traversal
                 ball.motion = self.reflection(ball.motion)
                 return ball
         return ball
