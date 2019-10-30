@@ -164,19 +164,7 @@ class GraphicsProgram3D:
         self.ball.set_vertices(self.shader)
         self.ball.display(self.model_matrix, self.shader)
 
-<<<<<<< HEAD
-        self.brick.set_vertices(self.shader)
-        self.shader.set_using_tex(1.0)   
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.textures[0])
-        self.shader.set_dif_tex(0)
-        
-        self.brick.display(self.model_matrix, self.shader)
-        self.brick2.display(self.model_matrix, self.shader)
-        self.shader.set_using_tex(0.0)
-=======
         self.brickArray[0].set_vertices(self.shader)
->>>>>>> e2bc8f372c6a1626035e5cb92ad3379cf9c89b27
 
         for brick in self.brickArray:
             brick.display(self.model_matrix, self.shader)
