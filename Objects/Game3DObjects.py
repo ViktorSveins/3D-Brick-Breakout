@@ -142,21 +142,9 @@ class LineObstacle(Line):
 
         # Check whether either end of line is inside the ball (check the corners)
         if self.pointInsideCircle(ball, self.point_1):
-            vectorToCorner = self.point_1 - ball.pos
-            vecLength = vectorToCorner.length()
-            vectorToCorner.normalize()
-            newBall = Ball(Point(0,0,0), ball.size, ball.color)
-            newBall.pos = ball.pos - vectorToCorner * (ball.radius - vecLength)
-            newBall.motion = ball.motion * -1
-            return newBall
+            return self.redirectBall(ball, closestPointOnLine)
         elif self.pointInsideCircle(ball, self.point_2):
-            vectorToCorner = self.point_2 - ball.pos
-            vecLength = vectorToCorner.length()
-            vectorToCorner.normalize()
-            newBall = Ball(Point(0,0,0), ball.size, ball.color)
-            newBall.pos = ball.pos - vectorToCorner * (ball.radius - vecLength)
-            newBall.motion = ball.motion * -1
-            return newBall
+            return self.redirectBall(ball, closestPointOnLine)
 
         vector = Vector(ball.pos.x - closestPointOnLine.x, ball.pos.y - closestPointOnLine.y, 0)
 
