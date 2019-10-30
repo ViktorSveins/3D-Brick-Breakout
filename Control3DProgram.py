@@ -26,7 +26,7 @@ class GraphicsProgram3D:
         self.model_matrix = ModelMatrix()
 
         self.view_matrix = ViewMatrix()
-        self.view_matrix.look(Point(0, 9.5, 20), Point(0, 9.5, 0), Vector(0, 1, 0))
+        self.view_matrix.look(Point(15, 9.5, 20), Point(15, 9.5, 0), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.projection_matrix = ProjectionMatrix()
@@ -58,10 +58,16 @@ class GraphicsProgram3D:
         self.texture_id03 = self.load_texture("/Textures/crack3.png")
         self.textures = [self.texture_id01, self.texture_id02, self.texture_id03]
         
-        self.brick = OneHitBrick(Point(0, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
-        self.brick2 = OneHitBrick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+        # self.brick = OneHitBrick(Point(0, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+        # self.brick2 = OneHitBrick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+        self.brickArray = []
+        for i in range(5):
+            brick = OneHitBrick(Point(i * 3, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+            self.brickArray.append(brick)
+            brick = OneHitBrick(Point(i * 3, 5, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+            self.brickArray.append(brick)
         # self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
-        self.ball = Ball(Point(5.0, 7.0, 0.0), 1)
+        self.ball = Ball(Point(18.0, 7.0, 0.0), 1)
         self.ball.motion = Vector(-1.75, 1, 0)
 
         self.pauseTime = 0.0
@@ -88,10 +94,10 @@ class GraphicsProgram3D:
         # #     angle -= (2 * pi)
         
         self.ball.update(delta_time)
-        self.ball = self.brick.collision(self.ball, delta_time)
-        self.ball = self.brick2.collision(self.ball, delta_time)
-        self.brick.update()
-        self.brick2.update()
+
+        for brick in self.brickArray:
+            self.ball = brick.collision(self.ball, delta_time)
+            brick.update()
 
         if self.UP_key_down:
             self.view_matrix.pitch((pi / 2) * delta_time)
@@ -158,6 +164,7 @@ class GraphicsProgram3D:
         self.ball.set_vertices(self.shader)
         self.ball.display(self.model_matrix, self.shader)
 
+<<<<<<< HEAD
         self.brick.set_vertices(self.shader)
         self.shader.set_using_tex(1.0)   
         glActiveTexture(GL_TEXTURE0)
@@ -167,7 +174,12 @@ class GraphicsProgram3D:
         self.brick.display(self.model_matrix, self.shader)
         self.brick2.display(self.model_matrix, self.shader)
         self.shader.set_using_tex(0.0)
+=======
+        self.brickArray[0].set_vertices(self.shader)
+>>>>>>> e2bc8f372c6a1626035e5cb92ad3379cf9c89b27
 
+        for brick in self.brickArray:
+            brick.display(self.model_matrix, self.shader)
 
         pygame.display.flip()
 
