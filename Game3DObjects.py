@@ -32,15 +32,12 @@ class Brick(Cube):
         self.draw(shader)
         model_matrix.pop_matrix()
         
-    def collision(self, c_position, radius, c_motion, delta_time):
+    def collision(self, ball, delta_time):
         # for i,side in enumerate(self.sides):
         #     if side.collision(c_position, radius, c_motion, delta_time):
         #         self.collision_side = i
         #         return True
-        if self.sides[3].collision(c_position, radius, c_motion, delta_time):
-            self.collision_side = 3
-            return True
-        return False
+        return self.sides[3].collision(ball, delta_time)
 
     def reflection(self, c_motion):
         return self.sides[self.collision_side].reflection(c_motion)
@@ -94,8 +91,8 @@ class LineObstacle(Line):
                      + ((ball.pos.y - self.point_1.y) * (self.point_2.y - self.point_1.y)) ) / length**2
         # print(f"dotproduct: {dotproduct}")
 
-        closestPointOnLine = Point(self.point_1.x + dotproduct * (self.point_2.x - self.point_1.x), 
-                                   self.point_1.y + dotproduct * (self.point_2.y - self.point_1.y), 0)
+        closestPointOnLine = Point(self.point_1.x - dotproduct * (self.point_2.x - self.point_1.x), 
+                                   self.point_1.y - dotproduct * (self.point_2.y - self.point_1.y), 0)
         # print(f"closest point on line: {closestPointOnLine}")
 
         vector = Vector(ball.pos.x - closestPointOnLine.x, ball.pos.y - closestPointOnLine.y, 0)

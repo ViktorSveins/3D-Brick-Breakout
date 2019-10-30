@@ -55,7 +55,7 @@ class GraphicsProgram3D:
         self.pause_game = False
 
         
-        self.brick = Brick(Point(0, 10, 0), 1, 1, Color(1.0, 0.0, 0.0))
+        self.brick = Brick(Point(0, 10, 0), 3, 1, Color(1.0, 0.0, 0.0))
         self.ball = Ball(Point(10.0, 0.0, 0.0), 1)
         self.ball.motion = Vector(-1, 0.95, 0)
 
@@ -78,10 +78,7 @@ class GraphicsProgram3D:
         # #     angle -= (2 * pi)
         
         self.ball.update(delta_time)
-        col = self.brick.collision(self.ball.pos, self.ball.radius, self.ball.motion, delta_time)
-        if(col):
-            print("COLLISION!")
-            self.ball.motion = self.brick.reflection(self.ball.motion)
+        self.ball = self.brick.collision(self.ball, delta_time)
 
         if self.UP_key_down:
             self.view_matrix.pitch((pi / 2) * delta_time)
