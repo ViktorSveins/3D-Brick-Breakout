@@ -34,19 +34,19 @@ class Brick(Cube):
         
     def collision(self, ball, delta_time):
         # Optimize to only check the sides facing the ball
-        sidesToCheck = []
+        # sidesToCheck = []
 
-        if ball.pos.x < self.pos.x:
-            sidesToCheck.append(self.sides[0])
-        else:
-            sidesToCheck.append(self.sides[2])
+        # if ball.pos.x < self.pos.x:
+        #     sidesToCheck.append(self.sides[0])
+        # else:
+        #     sidesToCheck.append(self.sides[2])
 
-        if ball.pos.y < self.pos.y:
-            sidesToCheck.append(self.sides[3])
-        else:
-            sidesToCheck.append(self.sides[1])
+        # if ball.pos.y < self.pos.y:
+        #     sidesToCheck.append(self.sides[3])
+        # else:
+        #     sidesToCheck.append(self.sides[1])
 
-        for i,side in enumerate(sidesToCheck):
+        for side in self.sides:
             collidedBall = side.collision(ball, delta_time)
             if collidedBall != ball:
                 return collidedBall
@@ -107,10 +107,13 @@ class LineObstacle(Line):
 
         vector = Vector(ball.pos.x - closestPointOnLine.x, ball.pos.y - closestPointOnLine.y, 0)
 
-        vector.normalize()
-
-        traversal = vector * ball.radius
-        closestPointOnCircle = Point(ball.pos.x - traversal.x, ball.pos.y - traversal.y, 0)
+        
+        if vector.length() == 0:
+            closestPointOnCircle = closestPointOnLine
+        else:
+            vector.normalize()
+            traversal = vector * ball.radius
+            closestPointOnCircle = Point(ball.pos.x - traversal.x, ball.pos.y - traversal.y, 0)
        
         normalDot = self.normal_vector.dot(ball.motion)
         if(normalDot == 0):
