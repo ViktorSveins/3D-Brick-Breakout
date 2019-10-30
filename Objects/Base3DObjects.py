@@ -144,7 +144,7 @@ class Cube:
     def set_vertices(self, shader):
         shader.set_position_attribute(self.position_array)
         shader.set_normal_attribute(self.normal_array)
-        # shader.set_uv_attribute(self.uv_array)
+        shader.set_uv_attribute(self.uv_array)
 
     def draw(self, shader):        
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)

@@ -36,7 +36,7 @@ class Shader3D:
         glEnableVertexAttribArray(self.normalLoc)
 
         self.uvLoc                  = glGetAttribLocation(self.renderingProgramID, "a_uv")
-        # glEnableVertexAttribArray(self.uvLoc)
+        glEnableVertexAttribArray(self.uvLoc)
 
         self.modelMatrixLoc			    = glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
         self.viewMatrixLoc              = glGetUniformLocation(self.renderingProgramID, "u_view_matrix")
@@ -55,7 +55,8 @@ class Shader3D:
         self.difTexLoc                  = glGetUniformLocation(self.renderingProgramID, "u_tex01")        
         self.specTexLoc                 = glGetUniformLocation(self.renderingProgramID, "u_tex02")
 
-
+        self.usingTex                 = glGetUniformLocation(self.renderingProgramID, "u_using_texture")
+        
 
     def use(self):
         try:
@@ -108,3 +109,6 @@ class Shader3D:
 
     def set_spec_tex(self, num):
         glUniform1i(self.specTexLoc, num)
+
+    def set_using_tex(self, num):
+        glUniform1f(self.usingTex, num)

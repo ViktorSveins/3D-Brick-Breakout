@@ -12,8 +12,7 @@ from random import randint
 
 from Shaders import *
 from Matrices import *
-from Objects.Base3DObjects import *
-from Objects.Game3DObjects import *
+from Objects.GameBricks import *
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -54,16 +53,19 @@ class GraphicsProgram3D:
         self.x_key_down = False
         self.pause_game = False
 
+        self.texture_id01 = self.load_texture("/Textures/crack1.png")
+        self.texture_id02 = self.load_texture("/Textures/crack2.png")
+        self.texture_id03 = self.load_texture("/Textures/crack3.png")
+        self.textures = [self.texture_id01, self.texture_id02, self.texture_id03]
         
-        self.brick = Brick(Point(0, 11, 0), 3, 1, Color(1.0, 0.0, 0.0))
-        self.brick2 = Brick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0))
-        self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
+        self.brick = OneHitBrick(Point(0, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+        self.brick2 = OneHitBrick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+        # self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
         self.ball = Ball(Point(5.0, 7.0, 0.0), 1)
         self.ball.motion = Vector(-1.75, 1, 0)
 
         self.pauseTime = 0.0
 
-        # self.texture_id01 = self.load_texture(sys.path[0] + "/textures/metalwall.png")
 
     def load_texture(self, path_string):
         surface = pygame.image.load(sys.path[0] + path_string)
@@ -88,7 +90,8 @@ class GraphicsProgram3D:
         self.ball.update(delta_time)
         self.ball = self.brick.collision(self.ball, delta_time)
         self.ball = self.brick2.collision(self.ball, delta_time)
-        self.ball = self.brick3.collision(self.ball, delta_time)
+        self.brick.update()
+        self.brick2.update()
 
         if self.UP_key_down:
             self.view_matrix.pitch((pi / 2) * delta_time)
@@ -163,9 +166,14 @@ class GraphicsProgram3D:
         self.ball.display(self.model_matrix, self.shader)
 
         self.brick.set_vertices(self.shader)
+        self.shader.set_using_tex(1.0)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.textures[0])
+        self.shader.set_dif_tex(0)
+
         self.brick.display(self.model_matrix, self.shader)
         self.brick2.display(self.model_matrix, self.shader)
-        self.brick3.display(self.model_matrix, self.shader)
+        self.shader.set_using_tex(0.0)
 
 
         pygame.display.flip()
