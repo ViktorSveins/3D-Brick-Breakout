@@ -72,54 +72,6 @@ class GraphicsProgram3D:
         return tex_id
 
     def update(self):
-<<<<<<< HEAD
-        if self.pause_game:
-            pass
-        else:
-            delta_time = self.clock.tick() / 1000.0
-
-            self.angle += pi * delta_time
-            # #     angle -= (2 * pi)
-
-            self.ball.update(delta_time)
-            self.ball = self.brick.collision(self.ball, delta_time)
-            # if(col):
-            #     print("COLLISION!")
-            #     self.ball.motion = self.brick.reflection(self.ball.motion)
-
-            if self.UP_key_down:
-                self.view_matrix.pitch((pi / 2) * delta_time)
-            if self.DOWN_key_down:
-                self.view_matrix.pitch(-(pi / 2) * delta_time)
-            if self.LEFT_key_down:
-                self.view_matrix.yaw(-(pi / 2) * delta_time)
-            if self.RIGHT_key_down:
-                self.view_matrix.yaw((pi / 2) * delta_time)
-
-            if self.w_key_down:
-                self.view_matrix.slide(0, 0, -3 * delta_time)
-            if self.s_key_down:
-                self.view_matrix.slide(0, 0, 3 * delta_time)
-            if self.a_key_down:
-                self.view_matrix.slide(-3 * delta_time, 0, 0)
-            if self.d_key_down:
-                self.view_matrix.slide(3 * delta_time, 0, 0)
-
-            if self.q_key_down:
-                self.view_matrix.roll((pi / 2) * delta_time)
-            if self.e_key_down:
-                self.view_matrix.roll(-(pi / 2) * delta_time)
-
-            if self.z_key_down:
-                self.view_matrix.slide(0, -1 * delta_time, 0)            
-            if self.x_key_down:
-                self.view_matrix.slide(0, 1 * delta_time, 0)
-
-            if self.t_key_down:
-                self.fov += 0.25 * delta_time
-            if self.g_key_down:
-                self.fov -= 0.25 * delta_time
-=======
         delta_time = self.clock.tick() / 1000.0
 
         self.angle += pi * delta_time
@@ -163,7 +115,6 @@ class GraphicsProgram3D:
             self.fov += 0.25 * delta_time
         if self.g_key_down:
             self.fov -= 0.25 * delta_time
->>>>>>> 6973fa2ae7dddd018ab14f82c6fa03e5f0258862
             
 
     def display(self):
