@@ -128,11 +128,6 @@ class LineObstacle(Line):
 
     def collision(self, ball, delta_time):
 
-        # Check whether either end of line is inside the ball (check the corners)
-        if self.pointInsideCircle(ball, self.point_1):
-            return self.redirectBall(ball, self.point_1)
-        elif self.pointInsideCircle(ball, self.point_2):
-            return self.redirectBall(ball, self.point_2)
 
         distX = self.point_1.x - self.point_2.x
         distY = self.point_1.y - self.point_2.y
@@ -144,6 +139,24 @@ class LineObstacle(Line):
 
         closestPointOnLine = Point(self.point_1.x + dotproduct * (self.point_2.x - self.point_1.x), 
                                    self.point_1.y + dotproduct * (self.point_2.y - self.point_1.y), 0)
+
+        # Check whether either end of line is inside the ball (check the corners)
+        if self.pointInsideCircle(ball, self.point_1):
+            vectorToCorner = self.point_1 - ball.pos
+            vecLength = vectorToCorner.length()
+            vectorToCorner.normalize()
+            newBall = Ball(Point(0,0,0), ball.size, ball.color)
+            newBall.pos = ball.pos - vectorToCorner * (ball.radius - vecLength)
+            newBall.motion = ball.motion * -1
+            return newBall
+        elif self.pointInsideCircle(ball, self.point_2):
+            vectorToCorner = self.point_2 - ball.pos
+            vecLength = vectorToCorner.length()
+            vectorToCorner.normalize()
+            newBall = Ball(Point(0,0,0), ball.size, ball.color)
+            newBall.pos = ball.pos - vectorToCorner * (ball.radius - vecLength)
+            newBall.motion = ball.motion * -1
+            return newBall
 
         vector = Vector(ball.pos.x - closestPointOnLine.x, ball.pos.y - closestPointOnLine.y, 0)
 
@@ -171,6 +184,7 @@ class LineObstacle(Line):
                 newBall = Ball(Point(0,0,0), ball.size, ball.color)
                 newBall.pos = p_hit + traversal
                 newBall.motion = self.reflection(ball.motion)
+                print("INSIDE DELTATIME THINGY")
                 return newBall
         return ball
     
