@@ -93,7 +93,45 @@ class LineObstacle(Line):
         Line.__init__(self, point_1, point_2)
         self.normal_vector = Vector(-(self.point_2.y - self.point_1.y), self.point_2.x - self.point_1.x, 0)
 
+    def pointInsideCircle(self, ball, point):
+        distX = ball.pos.x - point.x
+        distY = ball.pos.y - point.y
+    
+        length = sqrt(distX**2 + distY**2 )
+
+        return length < ball.radius
+
+    def pointInLineRange(self, point):
+        if self.point_1.x < self.point_2.x:
+                x_min, x_max = self.point_1.x, self.point_2.x
+        else:
+            x_min, x_max = self.point_2.x, self.point_1.x
+
+        if self.point_1.y < self.point_2.y:
+            y_min, y_max = self.point_1.y, self.point_2.y
+        else:
+            y_min, y_max = self.point_2.y, self.point_1.y
+
+        return point.x >= x_min and point.x <= x_max and point.y >= y_min and point.y <= y_max
+
+    def redirectBall(self, ball, point):
+        vectorToCorner = point - ball.pos
+        vecLength = vectorToCorner.length()
+        vectorToCorner.normalize()
+
+        ball.pos = ball.pos - vectorToCorner * (ball.radius - vecLength)
+        ball.motion = self.reflection(ball.motion)
+
+        return ball
+
     def collision(self, ball, delta_time):
+
+        # Check whether either end of line is inside the ball (check the corners)
+        if self.pointInsideCircle(ball, self.point_1):
+            return self.redirectBall(ball, self.point_1)
+        elif self.pointInsideCircle(ball, self.point_2):
+            return self.redirectBall(ball, self.point_2)
+
         distX = self.point_1.x - self.point_2.x
         distY = self.point_1.y - self.point_2.y
         
@@ -107,14 +145,18 @@ class LineObstacle(Line):
 
         vector = Vector(ball.pos.x - closestPointOnLine.x, ball.pos.y - closestPointOnLine.y, 0)
 
-        
         if vector.length() == 0:
             closestPointOnCircle = closestPointOnLine
+            traversal = Vector(0, 0, 0)
         else:
             vector.normalize()
             traversal = vector * ball.radius
             closestPointOnCircle = Point(ball.pos.x - traversal.x, ball.pos.y - traversal.y, 0)
        
+        # Check if the closest point on the line is already inside the ball
+        if self.pointInsideCircle(ball, closestPointOnLine) and self.pointInLineRange(closestPointOnLine):
+            return self.redirectBall(ball, closestPointOnLine)
+
         normalDot = self.normal_vector.dot(ball.motion)
         if(normalDot == 0):
             t_hit = 0
@@ -123,18 +165,7 @@ class LineObstacle(Line):
 
         if t_hit >= 0 and t_hit <= delta_time:
             p_hit = closestPointOnCircle + ball.motion * t_hit
-
-            if self.point_1.x < self.point_2.x:
-                x_min, x_max = self.point_1.x, self.point_2.x
-            else:
-                x_min, x_max = self.point_2.x, self.point_1.x
-
-            if self.point_1.y < self.point_2.y:
-                y_min, y_max = self.point_1.y, self.point_2.y
-            else:
-                y_min, y_max = self.point_2.y, self.point_1.y
-
-            if p_hit.x >= x_min and p_hit.x <= x_max and p_hit.y >= y_min and p_hit.y <= y_max:
+            if self.pointInLineRange(p_hit):
                 ball.pos = p_hit + traversal
                 ball.motion = self.reflection(ball.motion)
                 return ball

@@ -55,11 +55,11 @@ class GraphicsProgram3D:
         self.pause_game = False
 
         
-        self.brick = Brick(Point(0, 10, 0), 3, 1, Color(1.0, 0.0, 0.0))
+        self.brick = Brick(Point(0, 11, 0), 3, 1, Color(1.0, 0.0, 0.0))
         self.brick2 = Brick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0))
-        self.brick3 = Brick(Point(1, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
-        self.ball = Ball(Point(10.0, 0.0, 0.0), 1)
-        self.ball.motion = Vector(-20, 19, 0)
+        self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
+        self.ball = Ball(Point(5.0, 7.0, 0.0), 1)
+        self.ball.motion = Vector(-1.75, 1, 0)
 
         self.pauseTime = 0.0
 
@@ -129,7 +129,7 @@ class GraphicsProgram3D:
 
         glViewport(0, 0, 800, 600)
 
-        glClearColor(1.0, 1.0, 0.0, 1.0)
+        glClearColor(0.0, 0.0, 0.0, 1.0)
 
 
 
