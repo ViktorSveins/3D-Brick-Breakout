@@ -89,7 +89,7 @@ class GraphicsProgram3D:
         self.fr_ticker = 0.0
         self.fr_sum = 0.0
 
-        self.sphere = OptiSphere(12, 24)
+        self.sphere = Sphere(24, 48)
 
     def load_texture(self, path_string):
         surface = pygame.image.load(sys.path[0] + path_string)
@@ -166,8 +166,6 @@ class GraphicsProgram3D:
         glViewport(0, 0, 800, 600)
 
         glClearColor(1.0, 1.0, 1.0, 1.0)
-
-
 
         self.projection_matrix.set_perspective(self.fov, 800 / 600, 0.5, 100)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
