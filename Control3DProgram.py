@@ -77,13 +77,18 @@ class GraphicsProgram3D:
             self.brickArray.append(brick)
         # self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
         self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
-        self.ball.motion = Vector(-0.75, 0.95, 0)
+        self.ball.motion = Vector(-1.5, 1.7, 0)
 
         self.obj_model = load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
 
 
         self.pauseTime = 0.0
 
+        # check framerate, use for optimizing
+        self.fr_ticker = 0.0
+        self.fr_sum = 0.0
+
+        self.sphere = OptiSphere(24, 48)
 
     def load_texture(self, path_string):
         surface = pygame.image.load(sys.path[0] + path_string)
@@ -101,6 +106,13 @@ class GraphicsProgram3D:
         delta_time = self.clock.tick() / 1000.0
         if self.pause_game:
             return
+
+        self.fr_sum += delta_time
+        self.fr_ticker += 1
+        if self.fr_sum > 1.0:
+            print(self.fr_ticker / self.fr_sum)
+            self.fr_sum = 0
+            self.fr_ticker = 0
 
         self.angle += pi * delta_time
         # #     angle -= (2 * pi)
@@ -175,13 +187,27 @@ class GraphicsProgram3D:
         self.obj_model.draw(self.shader)
 
 
-        self.ball.set_vertices(self.shader)
+        # self.ball.set_vertices(self.shader)
         self.ball.display(self.model_matrix, self.shader)
 
         self.brickArray[0].set_vertices(self.shader)
 
         for brick in self.brickArray:
             brick.display(self.model_matrix, self.shader)
+
+        ####################
+        for i in range(8):
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_rotate_x(self.angle * 0.74324 + i * pi / 4.0)
+            self.model_matrix.add_translation(0.0, 5.0, 10.0)
+            self.model_matrix.add_rotate_x(-(self.angle * 0.74324 + i * pi / 4.0))
+            self.model_matrix.add_scale(3.0, 3.0, 3.0)
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+
+            self.shader.set_mat_diffuse(1.0, 1.0, 1.0) #! Maybe add Color to all diffuses?
+            self.sphere.draw(self.shader)
+            self.model_matrix.pop_matrix()
+        ####################
 
         pygame.display.flip()
 

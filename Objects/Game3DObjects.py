@@ -60,7 +60,7 @@ class Brick(Cube):
                 return collidedBall
         return ball
 
-class Ball(Sphere):
+class Ball(OptiSphere):
     def __init__(self, position, size, color=Color(1.0, 0.874, 0.0)):
         super().__init__(12, 24)
         self.pos = position
