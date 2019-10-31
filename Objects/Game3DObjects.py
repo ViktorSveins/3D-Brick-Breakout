@@ -22,7 +22,7 @@ class Brick(Cube):
         self.sides.append(LineObstacle(self.corner_1, self.corner_4))
 
     def display(self, model_matrix, shader):
-        shader.set_mat_diffuse(self.color.r, self.color.g, self.color.b)
+        shader.set_mat_diffuse(self.color)
         model_matrix.push_matrix()
         model_matrix.add_translation(self.pos.x, self.pos.y, self.pos.z)
         model_matrix.add_scale(self.w, self.h, self.l)
@@ -72,7 +72,7 @@ class Ball(Sphere):
         self.motion = Vector(0,0,0)
 
     def display(self, model_matrix, shader):
-        shader.set_mat_diffuse(self.color.r, self.color.g, self.color.b)
+        shader.set_mat_diffuse(self.color)
         model_matrix.push_matrix()
         model_matrix.add_translation(self.pos.x, self.pos.y, self.pos.z)
         model_matrix.add_scale(self.size, self.size, self.size)

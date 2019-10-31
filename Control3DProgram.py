@@ -13,6 +13,9 @@ from random import randint
 from Shaders import *
 from Matrices import *
 from Objects.GameBricks import *
+from Objects.Base3DObjects import *
+
+from ojb_3D_loading import *
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -75,6 +78,9 @@ class GraphicsProgram3D:
         # self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
         self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
         self.ball.motion = Vector(-0.75, 0.95, 0)
+
+        self.obj_model = load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
+
 
         self.pauseTime = 0.0
 
@@ -161,10 +167,12 @@ class GraphicsProgram3D:
         self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_specular(1.0, 1.0, 1.0)
 
-        self.shader.set_mat_specular(1.0, 1.0, 1.0)
+        self.shader.set_mat_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_mat_shininess(5.0)
         
         self.model_matrix.load_identity()
+
+        self.obj_model.draw(self.shader)
 
 
         self.ball.set_vertices(self.shader)

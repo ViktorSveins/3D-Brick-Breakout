@@ -1,4 +1,4 @@
-from Base3DObjects import *
+from Objects.Base3DObjects import *
 
 def load_mtl_file(file_location, file_name, mesh_model):
     print("  Start loading MTL: " + file_name)

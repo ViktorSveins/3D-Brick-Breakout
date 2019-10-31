@@ -95,11 +95,11 @@ class Shader3D:
     def set_light_specular(self, r, g, b):
         glUniform4f(self.lightSpecLoc, r, g, b, 1.0)
     
-    def set_mat_diffuse(self, r, g, b):
-        glUniform4f(self.matDifLoc, r, g, b, 1.0)
+    def set_mat_diffuse(self, color):
+        glUniform4f(self.matDifLoc, color.r, color.g, color.b, 1.0)
     
-    def set_mat_specular(self, r, g, b):
-        glUniform4f(self.matSpecLoc, r, g, b, 1.0)
+    def set_mat_specular(self, color):
+        glUniform4f(self.matSpecLoc, color.r, color.g, color.b, 1.0)
     
     def set_mat_shininess(self, shininess):
         glUniform1f(self.matShinLoc, shininess)
