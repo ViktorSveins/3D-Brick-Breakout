@@ -193,12 +193,16 @@ class SpriteShader:
         glUniform1i(self.difTexLoc, num)
 
     def set_alpha_tex(self, num):
-        glUniform1i(self.alphaTexLoc, num)
+        if num == None:
+            glUniform1f(self.usingAlphaTexture, 0.0)            
+        else:
+            glUniform1f(self.usingAlphaTexture, 1.0)
+            glUniform1i(self.alphaTexLoc, num)
 
-    def set_using_alpha_tex(self, num):
-        glUniform1f(self.usingAlphaTexture, num)
+    def set_opacity(self, opacity):
+        glUniform1f(self.opacityLoc, opacity)
 
     def set_attribute_buffers_with_uv(self, vertex_buffer_id):
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id)
-        glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 8 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(0))
-        glVertexAttribPointer(self.uvLoc, 2, GL_FLOAT, False, 8 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(3 * sizeof(GLfloat)))
+        glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 5 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(0))
+        glVertexAttribPointer(self.uvLoc, 2, GL_FLOAT, False, 5 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(3 * sizeof(GLfloat)))
