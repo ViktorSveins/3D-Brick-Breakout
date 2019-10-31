@@ -7,7 +7,6 @@ from OpenGL.GLU import *
 
 import math
 from math import *
-import numpy
 
 import numpy
 
@@ -27,18 +26,17 @@ class Point:
     def __str__(self):
         return f"x: {self.x}, y: {self.y}, z: {self.z}"
         
-class Color:
-    def __init__(self, r, g, b, a = 1.0):
-        self.r = r
-        self.g = g
-        self.b = b
-        self.a = a
+# class Color:
+#     def __init__(self, r, g, b):
+#         self.r = r
+#         self.g = g
+#         self.b = b
 
-    def __add__(self, other):
-        return Color(self.r + other.r, self.g + other.g, self.b + other.b, self.a + other.a)
+#     def __add__(self, other):
+#         return Color(self.r + other.r, self.g + other.g, self.b + other.b, self.a + other.a)
 
-    def __sub__(self, other):
-        return Color(self.r - other.r, self.g - other.g, self.b - other.b, self.a - other.a)
+#     def __sub__(self, other):
+#         return Color(self.r - other.r, self.g - other.g, self.b - other.b, self.a - other.a)
 
 class Line:
     def __init__(self, point_1, point_2):
@@ -78,11 +76,18 @@ class Vector:
     def cross(self, other):
         return Vector(self.y*other.z - self.z*other.y, self.z*other.x - self.x*other.z, self.x*other.y - self.y*other.x)
 
+class Color:
+    def __init__(self, r, g, b):
+        self.r = r
+        self.g = g
+        self.b = b
+
 class Material:
     def __init__(self, diffuse = None, specular = None, shininess = None):
         self.diffuse = Color(0.0, 0.0, 0.0) if diffuse == None else diffuse
         self.specular = Color(0.0, 0.0, 0.0) if specular == None else specular
         self.shininess = 1 if shininess == None else shininess
+
 
 class MeshModel:
     def __init__(self):
@@ -117,9 +122,9 @@ class MeshModel:
     def draw(self, shader):
         for mesh_id, mesh_material in self.mesh_materials.items():
             material = self.materials[mesh_material]
-            shader.set_mat_diffuse(material.diffuse)
-            shader.set_mat_specular(material.specular)
-            shader.set_mat_shininess(material.shininess)
+            shader.set_material_diffuse(material.diffuse)
+            shader.set_material_specular(material.specular)
+            shader.set_material_shininess(material.shininess)
             shader.set_attribute_buffers(self.vertex_buffer_ids[mesh_id])
             glDrawArrays(GL_TRIANGLES, 0, self.vertex_counts[mesh_id])
             glBindBuffer(GL_ARRAY_BUFFER, 0)
