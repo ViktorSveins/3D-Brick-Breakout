@@ -61,11 +61,11 @@ class GraphicsProgram3D:
         self.x_key_down = False
         self.pause_game = False
 
-        self.texture_id01 = load_texture("/Textures/crack1.png")
-        self.texture_id02 = load_texture("/Textures/crack2.png")
-        self.texture_id03 = load_texture("/Textures/crack3.png")
+        self.texture_id01 = load_texture("/crack1.png")
+        self.texture_id02 = load_texture("/crack2.png")
+        self.texture_id03 = load_texture("/crack3.png")
         self.textures = [self.texture_id01, self.texture_id02, self.texture_id03]
-        self.texture_galaxy = self.load_texture("/Textures/galaxy_tex.png")
+        self.texture_galaxy = load_texture("/galaxy_tex.png")
         
         # self.brick = OneHitBrick(Point(0, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
         # self.brick2 = OneHitBrick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
@@ -85,8 +85,8 @@ class GraphicsProgram3D:
         self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
         self.ball.motion = Vector(-1.5, 1.7, 0)
 
-        self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
-        # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "metallic_sphere.obj")
+        # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
+        self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "metallic_sphere.obj")
 
 
         self.pauseTime = 0.0
@@ -98,8 +98,8 @@ class GraphicsProgram3D:
         ### used for testing here
         self.sphere = Sphere(24, 48)
         self.sprite = Sprite()
-        self.texture_leaf_color = self.load_texture("/Textures/test_leaf_01.jpg")
-        self.texture_leaf_alpha = self.load_texture("/Textures/test_leaf_01_alpha.jpg")
+        self.texture_leaf_color = load_texture("/test_leaf_01.jpg")
+        self.texture_leaf_alpha = load_texture("/test_leaf_01_alpha.jpg")
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -163,7 +163,7 @@ class GraphicsProgram3D:
 
         glViewport(0, 0, 800, 600)
 
-        glClearColor(0.0, 0.0, 0.0, 1.0)
+        glClearColor(1.0, 1.0, 1.0, 1.0)
 
         self.shader.use()
 
@@ -184,11 +184,8 @@ class GraphicsProgram3D:
         self.model_matrix.load_identity()
 
         self.shader.set_using_tex(1.0)        
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.texture_id01)
-        self.shader.set_dif_tex(0)
         self.model_matrix.push_matrix()
-        self.model_matrix.add_scale(1, 1, 1)
+        self.model_matrix.add_scale(5, 5, 5)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model.draw(self.shader)
         self.model_matrix.pop_matrix()
@@ -222,30 +219,30 @@ class GraphicsProgram3D:
         ####################
 
         ##### Adding to sprite shader #####
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        # glEnable(GL_BLEND)
+        # glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        # glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        # glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         
-        self.sprite_shader.use()
-        self.sprite_shader.set_projection_matrix(self.projection_matrix.get_matrix())
-        self.sprite_shader.set_view_matrix((self.view_matrix.get_matrix()))
+        # self.sprite_shader.use()
+        # self.sprite_shader.set_projection_matrix(self.projection_matrix.get_matrix())
+        # self.sprite_shader.set_view_matrix((self.view_matrix.get_matrix()))
 
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.texture_leaf_color)
-        self.sprite_shader.set_dif_tex(0)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.texture_leaf_alpha)
-        self.sprite_shader.set_alpha_tex(1)
+        # glActiveTexture(GL_TEXTURE0)
+        # glBindTexture(GL_TEXTURE_2D, self.texture_leaf_color)
+        # self.sprite_shader.set_dif_tex(0)
+        # glActiveTexture(GL_TEXTURE1)
+        # glBindTexture(GL_TEXTURE_2D, self.texture_leaf_alpha)
+        # self.sprite_shader.set_alpha_tex(1)
 
-        self.sprite_shader.set_opacity(0.8)
+        # self.sprite_shader.set_opacity(0.8)
 
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(3.0, 6.0, 0.0)
-        self.model_matrix.add_scale(8.0, 8.0, 1.0)
-        self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
-        self.sprite.draw(self.sprite_shader)
-        self.model_matrix.pop_matrix()
+        # self.model_matrix.push_matrix()
+        # self.model_matrix.add_translation(3.0, 6.0, 0.0)
+        # self.model_matrix.add_scale(8.0, 8.0, 1.0)
+        # self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
+        # self.sprite.draw(self.sprite_shader)
+        # self.model_matrix.pop_matrix()
 
         glDisable(GL_BLEND)
 

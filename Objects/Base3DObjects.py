@@ -105,7 +105,7 @@ class MeshModel:
         if mesh_id not in self.vertex_arrays:
             self.vertex_arrays[mesh_id] = []
             self.vertex_counts[mesh_id] = 0
-            self.vertex_arrays[mesh_id] += [position.x, position.y, position.z, normal.x, normal.y, normal.z, uv.x, uv.y, uv.z]
+            self.vertex_arrays[mesh_id] += [position.x, position.y, position.z, normal.x, normal.y, normal.z]#, uv.x, uv.y]
         self.vertex_counts[mesh_id] += 1
 
     def set_mesh_material(self, mesh_id, mat_id):
@@ -127,14 +127,15 @@ class MeshModel:
             shader.set_material_diffuse(material.diffuse)
             shader.set_material_specular(material.specular)
             shader.set_material_shininess(material.shininess)
-            shader.set_attribute_buffers_with_uv(self.vertex_buffer_ids[mesh_id])
-            shader.set_using_tex(1.0)
-            glActiveTexture(GL_TEXTURE0)
-            glBindTexture(GL_TEXTURE_2D, material.tex_diffuse)
-            shader.set_dif_tex(0)
-            glActiveTexture(GL_TEXTURE1)
+            shader.set_attribute_buffers(self.vertex_buffer_ids[mesh_id])
+            shader.set_using_tex(0.0)
+            # glActiveTexture(GL_TEXTURE0)
+            # glBindTexture(GL_TEXTURE_2D, material.tex_diffuse)
+            # shader.set_dif_tex(material.tex_diffuse)
             glDrawArrays(GL_TRIANGLES, 0, self.vertex_counts[mesh_id])
             glBindBuffer(GL_ARRAY_BUFFER, 0)
+            shader.set_using_tex(0.0)
+
 
 class Cube:
     def __init__(self):
