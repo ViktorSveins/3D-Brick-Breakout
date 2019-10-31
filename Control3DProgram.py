@@ -71,15 +71,15 @@ class GraphicsProgram3D:
         # self.brick2 = OneHitBrick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
         self.brickArray = []
         for i in range(5):
-            brick = OneHitBrick(Point(i * 3, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+            brick = ThreeHitBrick(Point(i * 3, 11, 0), 3, 1, self.textures)
             self.brickArray.append(brick)
-            brick = OneHitBrick(Point(i * 3, 5, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+            brick = TwoHitBrick(Point(i * 3, 5, 0), 3, 1, self.textures)
             self.brickArray.append(brick)
 
         for i in range(1, 5):
-            brick = OneHitBrick(Point(-i * 3, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+            brick = OneHitBrick(Point(-i * 3, 11, 0), 3, 1, self.textures)
             self.brickArray.append(brick)
-            brick = OneHitBrick(Point(-i * 3, 5, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+            brick = ThreeHitBrick(Point(-i * 3, 5, 0), 3, 1, self.textures)
             self.brickArray.append(brick)
         # self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
         self.ballArray = []
@@ -88,9 +88,17 @@ class GraphicsProgram3D:
 
         self.ball2 = Ball(Point(19.0, 4, 0.0), 0.5)
         self.ball2.motion = Vector(-1.5, 1.7, 0)
+
+        self.ball3 = Ball(Point(20.0, 3, 0.0), 0.5)
+        self.ball3.motion = Vector(-1.5, 1.7, 0)
+
+        self.ball4 = Ball(Point(21.0, 2, 0.0), 0.5)
+        self.ball4.motion = Vector(-1.5, 1.7, 0)
         
         self.ballArray.append(self.ball)
         self.ballArray.append(self.ball2)
+        self.ballArray.append(self.ball3)
+        self.ballArray.append(self.ball4)
         self.skydome = Skysphere()
 
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
@@ -132,7 +140,7 @@ class GraphicsProgram3D:
             for i in range(len(self.ballArray)):
                 self.ballArray[i] = brick.collision(self.ballArray[i], delta_time)
                 brick.update()
-            if brick.currentHits <= brick.hitCount:
+            if not brick.destroy:
                 tmpList.append(brick)
         self.brickArray = tmpList
 
@@ -213,8 +221,8 @@ class GraphicsProgram3D:
         self.shader.set_eye_position(self.view_matrix.eye)
 
         self.shader.set_view_matrix((self.view_matrix.get_matrix()))
-        # self.shader.set_light_position(Point(3.0, 10.0, 6.0))
-        self.shader.set_light_position(self.view_matrix.eye)
+        self.shader.set_light_position(Point(0.0, 20.0, 10.0))
+        # self.shader.set_light_position(self.view_matrix.eye)
         self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_specular(1.0, 1.0, 1.0)
 
