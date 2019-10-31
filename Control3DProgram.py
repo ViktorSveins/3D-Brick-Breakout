@@ -83,6 +83,7 @@ class GraphicsProgram3D:
         # self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
         self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
         self.ball.motion = Vector(-1.5, 1.7, 0)
+        self.skydome = Skysphere()
 
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "metallic_sphere.obj")
@@ -174,7 +175,29 @@ class GraphicsProgram3D:
 
         glViewport(0, 0, 800, 600)
 
-        glClearColor(0.0, 0.0, 0.0, 1.0)
+        glClearColor(1.0, 1.0, 1.0, 1.0)
+        
+        self.model_matrix.load_identity()
+
+        #### Skydome
+        self.sprite_shader.use()
+        self.sprite_shader.set_projection_matrix(self.projection_matrix.get_matrix())
+        self.sprite_shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.texture_galaxy)
+        self.sprite_shader.set_dif_tex(0)
+        self.sprite_shader.set_alpha_tex(None)
+
+        self.sprite_shader.set_opacity(1.0)
+
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(3.0, 6.0, 15.0)
+
+        self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
+        self.skydome.draw(self.sprite_shader)
+        self.model_matrix.pop_matrix()
+        ##### Skydome ends
 
         self.shader.use()
 
@@ -192,7 +215,6 @@ class GraphicsProgram3D:
         self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_material_shininess(5.0)
         
-        self.model_matrix.load_identity()
 
         # self.model_matrix.push_matrix()
         # # self.model_matrix.add_scale(10, 10, 10)
