@@ -14,6 +14,7 @@ from Shaders import *
 from Matrices import *
 from Objects.GameBricks import *
 from Objects.Base3DObjects import *
+from Objects.Environment import *
 
 import ojb_3D_loading
 
@@ -23,13 +24,16 @@ class GraphicsProgram3D:
         pygame.init() 
         pygame.display.set_mode((800,600), pygame.OPENGL|pygame.DOUBLEBUF)
 
+        self.sprite_shader = SpriteShader()
+        self.sprite_shader.use()
+
         self.shader = Shader3D()
         self.shader.use()
 
         self.model_matrix = ModelMatrix()
 
         self.view_matrix = ViewMatrix()
-        self.view_matrix.look(Point(13.5, 10.5, 5), Point(13.5, 10.5, 0), Vector(0, 1, 0))
+        self.view_matrix.look(Point(3.0, 6.0, 20), Point(3.0, 6.0, 0), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.projection_matrix = ProjectionMatrix()
@@ -60,6 +64,7 @@ class GraphicsProgram3D:
         self.texture_id02 = self.load_texture("/Textures/crack2.png")
         self.texture_id03 = self.load_texture("/Textures/crack3.png")
         self.textures = [self.texture_id01, self.texture_id02, self.texture_id03]
+        self.texture_galaxy = self.load_texture("/Textures/galaxy_tex.png")
         
         # self.brick = OneHitBrick(Point(0, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
         # self.brick2 = OneHitBrick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
@@ -80,7 +85,7 @@ class GraphicsProgram3D:
         self.ball.motion = Vector(-1.5, 1.7, 0)
 
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
-        self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "metallic_sphere.obj")
+        # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "metallic_sphere.obj")
 
 
         self.pauseTime = 0.0
@@ -89,7 +94,11 @@ class GraphicsProgram3D:
         self.fr_ticker = 0.0
         self.fr_sum = 0.0
 
+        ### used for testing here
         self.sphere = Sphere(24, 48)
+        self.sprite = Sprite()
+        self.texture_leaf_color = self.load_texture("/Textures/test_leaf_01.jpg")
+        self.texture_leaf_alpha = self.load_texture("/Textures/test_leaf_01_alpha.jpg")
 
     def load_texture(self, path_string):
         surface = pygame.image.load(sys.path[0] + path_string)
@@ -165,7 +174,9 @@ class GraphicsProgram3D:
 
         glViewport(0, 0, 800, 600)
 
-        glClearColor(1.0, 1.0, 1.0, 1.0)
+        glClearColor(0.0, 0.0, 0.0, 1.0)
+
+        self.shader.use()
 
         self.projection_matrix.set_perspective(self.fov, 800 / 600, 0.5, 100)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
@@ -183,15 +194,15 @@ class GraphicsProgram3D:
         
         self.model_matrix.load_identity()
 
-        self.model_matrix.push_matrix()
-        # self.model_matrix.add_scale(10, 10, 10)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.obj_model.draw(self.shader)
-        self.model_matrix.pop_matrix()
+        # self.model_matrix.push_matrix()
+        # # self.model_matrix.add_scale(10, 10, 10)
+        # self.shader.set_model_matrix(self.model_matrix.matrix)
+        # self.obj_model.draw(self.shader)
+        # self.model_matrix.pop_matrix()
 
 
 
-        # self.ball.display(self.model_matrix, self.shader)
+        self.ball.display(self.model_matrix, self.shader)
 
         self.brickArray[0].set_vertices(self.shader)
 
@@ -211,6 +222,34 @@ class GraphicsProgram3D:
         #     self.sphere.draw(self.shader)
         #     self.model_matrix.pop_matrix()
         ####################
+
+        ##### Adding to sprite shader #####
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        
+        self.sprite_shader.use()
+        self.sprite_shader.set_projection_matrix(self.projection_matrix.get_matrix())
+        self.sprite_shader.set_view_matrix((self.view_matrix.get_matrix()))
+
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.texture_leaf_color)
+        self.sprite_shader.set_dif_tex(0)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.texture_leaf_alpha)
+        self.sprite_shader.set_alpha_tex(1)
+
+        self.sprite_shader.set_opacity(0.8)
+
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(3.0, 6.0, 0.0)
+        self.model_matrix.add_scale(8.0, 8.0, 1.0)
+        self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
+        self.sprite.draw(self.sprite_shader)
+        self.model_matrix.pop_matrix()
+
+        glDisable(GL_BLEND)
 
         pygame.display.flip()
 

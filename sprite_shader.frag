@@ -11,10 +11,10 @@ void main(void)
 	vec4 color = texture2D(u_tex01, v_uv);
 	float opacity = u_opacity;
 	if (u_using_alpha_texture == 1.0) {
-		opacity *= 1 - texture2D(u_tex02, v_uv).r;
+		opacity *= texture2D(u_tex02, v_uv).r;
 	}
 
-	if(opacity < 0.01){
+	if(opacity < 0.1){
 		discard;
 	}
 	
