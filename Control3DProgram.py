@@ -14,6 +14,7 @@ from Shaders import *
 from Matrices import *
 from Objects.GameBricks import *
 from Objects.Base3DObjects import *
+from texture_loading import *
 
 import ojb_3D_loading
 
@@ -56,9 +57,9 @@ class GraphicsProgram3D:
         self.x_key_down = False
         self.pause_game = False
 
-        self.texture_id01 = self.load_texture("/Textures/crack1.png")
-        self.texture_id02 = self.load_texture("/Textures/crack2.png")
-        self.texture_id03 = self.load_texture("/Textures/crack3.png")
+        self.texture_id01 = load_texture("/Textures/crack1.png")
+        self.texture_id02 = load_texture("/Textures/crack2.png")
+        self.texture_id03 = load_texture("/Textures/crack3.png")
         self.textures = [self.texture_id01, self.texture_id02, self.texture_id03]
         
         # self.brick = OneHitBrick(Point(0, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
@@ -90,18 +91,6 @@ class GraphicsProgram3D:
         self.fr_sum = 0.0
 
         self.sphere = Sphere(24, 48)
-
-    def load_texture(self, path_string):
-        surface = pygame.image.load(sys.path[0] + path_string)
-        tex_string = pygame.image.tostring(surface, "RGBA", 1)
-        width = surface.get_width()
-        height = surface.get_height()
-        tex_id = glGenTextures(1)
-        glBindTexture(GL_TEXTURE_2D, tex_id)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_string)
-        return tex_id
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -183,17 +172,24 @@ class GraphicsProgram3D:
         
         self.model_matrix.load_identity()
 
-        self.shader.set_using_tex(0.0)
+        self.shader.set_using_tex(1.0)        
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.texture_id01)
+        self.shader.set_dif_tex(0)
         self.model_matrix.push_matrix()
-        # self.model_matrix.add_scale(10, 10, 10)
+        self.model_matrix.add_scale(1, 1, 1)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model.draw(self.shader)
         self.model_matrix.pop_matrix()
+        self.shader.set_using_tex(0.0)        
+
+
+        self.shader.set_using_tex(1.0)        
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.texture_id01)
+        self.shader.set_dif_tex(0)
+        self.ball.display(self.model_matrix, self.shader)
         self.shader.set_using_tex(0.0)
-
-
-
-        # self.ball.display(self.model_matrix, self.shader)
 
         self.brickArray[0].set_vertices(self.shader)
 

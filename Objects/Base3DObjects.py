@@ -83,10 +83,12 @@ class Color:
         self.b = b
 
 class Material:
-    def __init__(self, diffuse = None, specular = None, shininess = None):
+    def __init__(self, diffuse = None, specular = None, shininess = None, tex_diffuse = None, tex_specular = None):
         self.diffuse = Color(0.0, 0.0, 0.0) if diffuse == None else diffuse
         self.specular = Color(0.0, 0.0, 0.0) if specular == None else specular
         self.shininess = 1 if shininess == None else shininess
+        self.tex_diffuse = tex_diffuse
+        self.tex_specular = tex_specular
 
 
 class MeshModel:
@@ -94,15 +96,16 @@ class MeshModel:
         self.vertex_arrays = dict()
         # self.index_arrays = dict()
         self.mesh_materials = dict()
+        self.mesh_textures = dict()
         self.materials = dict()
         self.vertex_counts = dict()
         self.vertex_buffer_ids = dict()
 
-    def add_vertex(self, mesh_id, position, normal, uv = None):
+    def add_vertex(self, mesh_id, position, normal, uv):
         if mesh_id not in self.vertex_arrays:
             self.vertex_arrays[mesh_id] = []
             self.vertex_counts[mesh_id] = 0
-        self.vertex_arrays[mesh_id] += [position.x, position.y, position.z, normal.x, normal.y, normal.z]
+            self.vertex_arrays[mesh_id] += [position.x, position.y, position.z, normal.x, normal.y, normal.z, uv.x, uv.y, uv.z]
         self.vertex_counts[mesh_id] += 1
 
     def set_mesh_material(self, mesh_id, mat_id):
@@ -118,14 +121,18 @@ class MeshModel:
             glBufferData(GL_ARRAY_BUFFER, numpy.array(self.vertex_arrays[mesh_id], dtype='float32'), GL_STATIC_DRAW)
             glBindBuffer(GL_ARRAY_BUFFER, 0)
 
-
     def draw(self, shader):
         for mesh_id, mesh_material in self.mesh_materials.items():
             material = self.materials[mesh_material]
             shader.set_material_diffuse(material.diffuse)
             shader.set_material_specular(material.specular)
             shader.set_material_shininess(material.shininess)
-            shader.set_attribute_buffers(self.vertex_buffer_ids[mesh_id])
+            shader.set_attribute_buffers_with_uv(self.vertex_buffer_ids[mesh_id])
+            shader.set_using_tex(1.0)
+            glActiveTexture(GL_TEXTURE0)
+            glBindTexture(GL_TEXTURE_2D, material.tex_diffuse)
+            shader.set_dif_tex(0)
+            glActiveTexture(GL_TEXTURE1)
             glDrawArrays(GL_TRIANGLES, 0, self.vertex_counts[mesh_id])
             glBindBuffer(GL_ARRAY_BUFFER, 0)
 
@@ -248,7 +255,7 @@ class Sphere:
     #     shader.set_attribute_buffers(self.vertex_buffer_id)
 
     def draw(self, shader):
-        shader.set_attribute_buffers(self.vertex_buffer_id)
+        shader.set_attribute_buffers_with_uv(self.vertex_buffer_id)
         for i in range(0, self.vertex_count, (self.slices + 1) * 2):
             glDrawArrays(GL_TRIANGLE_STRIP, i, (self.slices + 1) * 2)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
