@@ -2,7 +2,7 @@ from Objects.Base3DObjects import *
 
 # No need for inheritence here since every functions needs to be changed anyway
 class Skysphere:
-    def __init__(self, stacks = 6, slices = 12):
+    def __init__(self, stacks = 128, slices = 256):
         vertex_array = []
         self.slices = slices
         stack_interval = pi / stacks
@@ -18,9 +18,15 @@ class Skysphere:
                 vertex_array.append(cos(stack_angle))
                 vertex_array.append(sin(stack_angle) * sin(slice_angle))
 
+                vertex_array.append(slice_count / slices)
+                vertex_array.append(stack_count / stacks)
+
                 vertex_array.append(sin(stack_angle + stack_interval) * cos(slice_angle))
                 vertex_array.append(cos(stack_angle + stack_interval))
                 vertex_array.append(sin(stack_angle + stack_interval) * sin(slice_angle))
+
+                vertex_array.append(slice_count / slices)
+                vertex_array.append((stack_count + 1) / stacks)
 
                 self.vertex_count += 2
         
