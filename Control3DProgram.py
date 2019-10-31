@@ -89,11 +89,7 @@ class GraphicsProgram3D:
         self.fr_ticker = 0.0
         self.fr_sum = 0.0
 
-<<<<<<< HEAD
         self.sphere = Sphere(24, 48)
-=======
-        self.sphere = OptiSphere(12, 24)
->>>>>>> 861e7ec65f3af77c15dbea9254d4281344354db2
 
     def load_texture(self, path_string):
         surface = pygame.image.load(sys.path[0] + path_string)
@@ -211,11 +207,7 @@ class GraphicsProgram3D:
         #     self.model_matrix.add_scale(3.0, 3.0, 3.0)
         #     self.shader.set_model_matrix(self.model_matrix.matrix)
 
-<<<<<<< HEAD
-        #     self.shader.set_mat_diffuse(1.0, 1.0, 1.0) #! Maybe add Color to all diffuses?
-=======
         #     self.shader.set_material_diffuse(Color(1.0, 1.0, 1.0))
->>>>>>> 861e7ec65f3af77c15dbea9254d4281344354db2
         #     self.sphere.draw(self.shader)
         #     self.model_matrix.pop_matrix()
         ####################
