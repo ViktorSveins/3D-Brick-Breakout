@@ -257,10 +257,17 @@ class OptiSphere:
                     vertex_array.append(sin(stack_angle) * cos(slice_angle))
                     vertex_array.append(cos(stack_angle))
                     vertex_array.append(sin(stack_angle) * sin(slice_angle))
+
+                vertex_array.append(slice_count / slices)
+                vertex_array.append(stack_count / stacks)
+                
                 for _ in range(2):
                     vertex_array.append(sin(stack_angle + stack_interval) * cos(slice_angle))
                     vertex_array.append(cos(stack_angle + stack_interval))
                     vertex_array.append(sin(stack_angle + stack_interval) * sin(slice_angle))
+
+                vertex_array.append(slice_count / slices)
+                vertex_array.append((stack_count + 1) / stacks)
 
                 self.vertex_count += 2
         
