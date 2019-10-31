@@ -26,18 +26,17 @@ class Point:
     def __str__(self):
         return f"x: {self.x}, y: {self.y}, z: {self.z}"
         
-class Color:
-    def __init__(self, r, g, b, a = 1.0):
-        self.r = r
-        self.g = g
-        self.b = b
-        self.a = a
+# class Color:
+#     def __init__(self, r, g, b):
+#         self.r = r
+#         self.g = g
+#         self.b = b
 
-    def __add__(self, other):
-        return Color(self.r + other.r, self.g + other.g, self.b + other.b, self.a + other.a)
+#     def __add__(self, other):
+#         return Color(self.r + other.r, self.g + other.g, self.b + other.b, self.a + other.a)
 
-    def __sub__(self, other):
-        return Color(self.r - other.r, self.g - other.g, self.b - other.b, self.a - other.a)
+#     def __sub__(self, other):
+#         return Color(self.r - other.r, self.g - other.g, self.b - other.b, self.a - other.a)
 
 class Line:
     def __init__(self, point_1, point_2):
@@ -76,6 +75,59 @@ class Vector:
 
     def cross(self, other):
         return Vector(self.y*other.z - self.z*other.y, self.z*other.x - self.x*other.z, self.x*other.y - self.y*other.x)
+
+class Color:
+    def __init__(self, r, g, b):
+        self.r = r
+        self.g = g
+        self.b = b
+
+class Material:
+    def __init__(self, diffuse = None, specular = None, shininess = None):
+        self.diffuse = Color(0.0, 0.0, 0.0) if diffuse == None else diffuse
+        self.specular = Color(0.0, 0.0, 0.0) if specular == None else specular
+        self.shininess = 1 if shininess == None else shininess
+
+
+class MeshModel:
+    def __init__(self):
+        self.vertex_arrays = dict()
+        # self.index_arrays = dict()
+        self.mesh_materials = dict()
+        self.materials = dict()
+        self.vertex_counts = dict()
+        self.vertex_buffer_ids = dict()
+
+    def add_vertex(self, mesh_id, position, normal, uv = None):
+        if mesh_id not in self.vertex_arrays:
+            self.vertex_arrays[mesh_id] = []
+            self.vertex_counts[mesh_id] = 0
+        self.vertex_arrays[mesh_id] += [position.x, position.y, position.z, normal.x, normal.y, normal.z]
+        self.vertex_counts[mesh_id] += 1
+
+    def set_mesh_material(self, mesh_id, mat_id):
+        self.mesh_materials[mesh_id] = mat_id
+
+    def add_material(self, mat_id, mat):
+        self.materials[mat_id] = mat
+    
+    def set_opengl_buffers(self):
+        for mesh_id in self.mesh_materials.keys():
+            self.vertex_buffer_ids[mesh_id] = glGenBuffers(1)
+            glBindBuffer(GL_ARRAY_BUFFER, self.vertex_buffer_ids[mesh_id])
+            glBufferData(GL_ARRAY_BUFFER, numpy.array(self.vertex_arrays[mesh_id], dtype='float32'), GL_STATIC_DRAW)
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+
+    def draw(self, shader):
+        for mesh_id, mesh_material in self.mesh_materials.items():
+            material = self.materials[mesh_material]
+            shader.set_material_diffuse(material.diffuse)
+            shader.set_material_specular(material.specular)
+            shader.set_material_shininess(material.shininess)
+            shader.set_attribute_buffers(self.vertex_buffer_ids[mesh_id])
+            glDrawArrays(GL_TRIANGLES, 0, self.vertex_counts[mesh_id])
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
 
 class Cube:
     def __init__(self):
