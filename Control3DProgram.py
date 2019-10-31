@@ -82,7 +82,7 @@ class GraphicsProgram3D:
         self.fr_ticker = 0.0
         self.fr_sum = 0.0
 
-        self.sphere = OptiSphere(24, 48)
+        self.sphere = Sphere(24, 48)
 
     def load_texture(self, path_string):
         surface = pygame.image.load(sys.path[0] + path_string)
@@ -160,8 +160,6 @@ class GraphicsProgram3D:
 
         glClearColor(1.0, 1.0, 1.0, 1.0)
 
-
-
         self.projection_matrix.set_perspective(self.fov, 800 / 600, 0.5, 100)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
@@ -188,17 +186,17 @@ class GraphicsProgram3D:
             brick.display(self.model_matrix, self.shader)
 
         ####################
-        for i in range(8):
-            self.model_matrix.push_matrix()
-            self.model_matrix.add_rotate_x(self.angle * 0.74324 + i * pi / 4.0)
-            self.model_matrix.add_translation(0.0, 5.0, 10.0)
-            self.model_matrix.add_rotate_x(-(self.angle * 0.74324 + i * pi / 4.0))
-            self.model_matrix.add_scale(3.0, 3.0, 3.0)
-            self.shader.set_model_matrix(self.model_matrix.matrix)
+        # for i in range(8):
+        #     self.model_matrix.push_matrix()
+        #     self.model_matrix.add_rotate_x(self.angle * 0.74324 + i * pi / 4.0)
+        #     self.model_matrix.add_translation(0.0, 5.0, 10.0)
+        #     self.model_matrix.add_rotate_x(-(self.angle * 0.74324 + i * pi / 4.0))
+        #     self.model_matrix.add_scale(3.0, 3.0, 3.0)
+        #     self.shader.set_model_matrix(self.model_matrix.matrix)
 
-            self.shader.set_mat_diffuse(1.0, 1.0, 1.0) #! Maybe add Color to all diffuses?
-            self.sphere.draw(self.shader)
-            self.model_matrix.pop_matrix()
+        #     self.shader.set_mat_diffuse(1.0, 1.0, 1.0) #! Maybe add Color to all diffuses?
+        #     self.sphere.draw(self.shader)
+        #     self.model_matrix.pop_matrix()
         ####################
 
         pygame.display.flip()
