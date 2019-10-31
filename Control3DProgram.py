@@ -26,7 +26,7 @@ class GraphicsProgram3D:
         self.model_matrix = ModelMatrix()
 
         self.view_matrix = ViewMatrix()
-        self.view_matrix.look(Point(0, 7, 40), Point(0, 7, 0), Vector(0, 1, 0))
+        self.view_matrix.look(Point(13.5, 10.5, 5), Point(13.5, 10.5, 0), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.projection_matrix = ProjectionMatrix()
@@ -74,7 +74,7 @@ class GraphicsProgram3D:
             self.brickArray.append(brick)
         # self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
         self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
-        self.ball.motion = Vector(-6, 6, 0)
+        self.ball.motion = Vector(-0.75, 0.95, 0)
 
         self.pauseTime = 0.0
 
@@ -146,7 +146,7 @@ class GraphicsProgram3D:
 
         glViewport(0, 0, 800, 600)
 
-        glClearColor(0.0, 0.0, 0.0, 1.0)
+        glClearColor(1.0, 1.0, 1.0, 1.0)
 
 
 
@@ -156,8 +156,8 @@ class GraphicsProgram3D:
         self.shader.set_eye_position(self.view_matrix.eye)
 
         self.shader.set_view_matrix((self.view_matrix.get_matrix()))
-        self.shader.set_light_position(Point(3.0, 10.0, 6.0))
-        # self.shader.set_light_position(self.view_matrix.eye)
+        # self.shader.set_light_position(Point(3.0, 10.0, 6.0))
+        self.shader.set_light_position(self.view_matrix.eye)
         self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_specular(1.0, 1.0, 1.0)
 

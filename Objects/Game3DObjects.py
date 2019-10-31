@@ -35,19 +35,25 @@ class Brick(Cube):
         
     def collision(self, ball, delta_time):
         # Optimize to only check the sides facing the ball
-        # sidesToCheck = []
+        sidesToCheck = []
 
-        # if ball.pos.x < self.pos.x:
-        #     sidesToCheck.append(self.sides[0])
-        # else:
-        #     sidesToCheck.append(self.sides[2])
+        if ball.pos.x < self.pos.x:
+            sidesToCheck.append(self.sides[0])
+        else:
+            sidesToCheck.append(self.sides[2])
 
-        # if ball.pos.y < self.pos.y:
-        #     sidesToCheck.append(self.sides[3])
-        # else:
-        #     sidesToCheck.append(self.sides[1])
+        if ball.pos.y < self.pos.y:
+            sidesToCheck.append(self.sides[3])
+        else:
+            sidesToCheck.append(self.sides[1])
 
-        for side in self.sides:
+        distX = abs(sidesToCheck[0].point_1.x - ball.pos.x)
+        distY = abs(sidesToCheck[1].point_1.y - ball.pos.y)
+        
+        if distY > distX:
+            sidesToCheck.reverse()
+        
+        for side in sidesToCheck:
             collidedBall = side.collision(ball, delta_time)
             if collidedBall != ball:
                 self.collided = True
@@ -66,7 +72,7 @@ class Ball(Sphere):
         self.size = size
         self.color = color
         self.shininess = 50.0
-        self.radius = (self.size / 2) + 0.5
+        self.radius = (self.size + 0.5) / 2
         self.shot = True
         self.motion = Vector(0,0,0)
 
@@ -127,8 +133,6 @@ class LineObstacle(Line):
         return newBall
 
     def collision(self, ball, delta_time):
-
-
         distX = self.point_1.x - self.point_2.x
         distY = self.point_1.y - self.point_2.y
         
@@ -142,8 +146,19 @@ class LineObstacle(Line):
 
         # Check whether either end of line is inside the ball (check the corners)
         if self.pointInsideCircle(ball, self.point_1):
-            return self.redirectBall(ball, closestPointOnLine)
+            print(f"ball = {ball.pos}")
+            print(f"point_1 = {self.point_1}")
+            print(f"point_2 = {self.point_2}")
+
+            return self.redirectBall(ball, self.point_1)
         elif self.pointInsideCircle(ball, self.point_2):
+            print(f"ball = {ball.pos}")            
+            print(f"point_1 = {self.point_2}")
+            print(f"point_2 = {self.point_1}")
+            return self.redirectBall(ball, self.point_2)
+        
+        # Check if the closest point on the line is already inside the ball
+        if self.pointInsideCircle(ball, closestPointOnLine) and self.pointInLineRange(closestPointOnLine):
             return self.redirectBall(ball, closestPointOnLine)
 
         vector = Vector(ball.pos.x - closestPointOnLine.x, ball.pos.y - closestPointOnLine.y, 0)
@@ -156,9 +171,6 @@ class LineObstacle(Line):
             traversal = vector * ball.radius
             closestPointOnCircle = Point(ball.pos.x - traversal.x, ball.pos.y - traversal.y, 0)
        
-        # Check if the closest point on the line is already inside the ball
-        if self.pointInsideCircle(ball, closestPointOnLine) and self.pointInLineRange(closestPointOnLine):
-            return self.redirectBall(ball, closestPointOnLine)
 
         normalDot = self.normal_vector.dot(ball.motion)
         if(normalDot == 0):
