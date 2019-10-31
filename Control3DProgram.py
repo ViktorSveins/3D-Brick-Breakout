@@ -82,8 +82,15 @@ class GraphicsProgram3D:
             brick = OneHitBrick(Point(-i * 3, 5, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
             self.brickArray.append(brick)
         # self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
+        self.ballArray = []
         self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
         self.ball.motion = Vector(-1.5, 1.7, 0)
+
+        self.ball2 = Ball(Point(19.0, 4, 0.0), 0.5)
+        self.ball2.motion = Vector(-1.5, 1.7, 0)
+        
+        self.ballArray.append(self.ball)
+        self.ballArray.append(self.ball2)
         self.skydome = Skysphere()
 
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
@@ -117,11 +124,17 @@ class GraphicsProgram3D:
         self.angle += pi * delta_time
         # #     angle -= (2 * pi)
         
-        self.ball.update(delta_time)
+        for ball in self.ballArray:
+            ball.update(delta_time)
 
+        tmpList = []
         for brick in self.brickArray:
-            self.ball = brick.collision(self.ball, delta_time)
-            brick.update()
+            for i in range(len(self.ballArray)):
+                self.ballArray[i] = brick.collision(self.ballArray[i], delta_time)
+                brick.update()
+            if brick.currentHits <= brick.hitCount:
+                tmpList.append(brick)
+        self.brickArray = tmpList
 
         if self.UP_key_down:
             self.view_matrix.pitch((pi / 2) * delta_time)
@@ -225,7 +238,8 @@ class GraphicsProgram3D:
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.texture_id01)
         self.shader.set_dif_tex(0)
-        self.ball.display(self.model_matrix, self.shader)
+        for ball in self.ballArray:
+            ball.display(self.model_matrix, self.shader)
         self.shader.set_using_tex(0.0)
 
         self.brickArray[0].set_vertices(self.shader)
@@ -248,32 +262,32 @@ class GraphicsProgram3D:
         ####################
 
         ##### Adding to sprite shader how to draw with alpha image #####
-        # glEnable(GL_BLEND)
-        # glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        # glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        # glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         
-        # self.sprite_shader.use()
-        # self.sprite_shader.set_projection_matrix(self.projection_matrix.get_matrix())
-        # self.sprite_shader.set_view_matrix((self.view_matrix.get_matrix()))
+        self.sprite_shader.use()
+        self.sprite_shader.set_projection_matrix(self.projection_matrix.get_matrix())
+        self.sprite_shader.set_view_matrix((self.view_matrix.get_matrix()))
 
-        # glActiveTexture(GL_TEXTURE0)
-        # glBindTexture(GL_TEXTURE_2D, self.texture_leaf_color)
-        # self.sprite_shader.set_dif_tex(0)
-        # glActiveTexture(GL_TEXTURE1)
-        # glBindTexture(GL_TEXTURE_2D, self.texture_leaf_alpha)
-        # self.sprite_shader.set_alpha_tex(1)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.texture_leaf_color)
+        self.sprite_shader.set_dif_tex(0)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.texture_leaf_alpha)
+        self.sprite_shader.set_alpha_tex(1)
 
-        # self.sprite_shader.set_opacity(0.8)
+        self.sprite_shader.set_opacity(0.8)
 
-        # self.model_matrix.push_matrix()
-        # self.model_matrix.add_translation(3.0, 6.0, 0.0)
-        # self.model_matrix.add_scale(8.0, 8.0, 1.0)
-        # self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
-        # self.sprite.draw(self.sprite_shader)
-        # self.model_matrix.pop_matrix()
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(3.0, 6.0, 0.0)
+        self.model_matrix.add_scale(8.0, 8.0, 1.0)
+        self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
+        self.sprite.draw(self.sprite_shader)
+        self.model_matrix.pop_matrix()
 
-        # glDisable(GL_BLEND)
+        glDisable(GL_BLEND)
 
         pygame.display.flip()
 
