@@ -12,8 +12,8 @@ newmtl 12281_container
 	Kd 1.0000 1.0000 1.0000
 	Ks 0.1045 0.1045 0.1045
 	Ke 0.0000 0.0000 0.0000
-	map_Ka 12281_Container_diffuse.jpg
-	map_Kd 12281_Container_diffuse.jpg
+	map_Ka Container.jpg
+	map_Kd Container.jpg
 
 newmtl 12281_container_alum
 	Ns 80.0000
@@ -26,5 +26,5 @@ newmtl 12281_container_alum
 	Kd 1.0000 1.0000 1.0000
 	Ks 0.7200 0.7200 0.7200
 	Ke 0.0000 0.0000 0.0000
-	map_Ka 12281_Container_diffuse.jpg
-	map_Kd 12281_Container_diffuse.jpg
+	map_Ka Container.jpg
+	map_Kd Container.jpg

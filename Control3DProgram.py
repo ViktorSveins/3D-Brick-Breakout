@@ -34,7 +34,7 @@ class GraphicsProgram3D:
         self.model_matrix = ModelMatrix()
 
         self.view_matrix = ViewMatrix()
-        self.view_matrix.look(Point(3.0, 6.0, 20), Point(3.0, 6.0, 0), Vector(0, 1, 0))
+        self.view_matrix.look(Point(0.0, 0.0, -10), Point(0.0, 0.0, 0), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.projection_matrix = ProjectionMatrix()
@@ -67,7 +67,6 @@ class GraphicsProgram3D:
         self.textures = [self.texture_id01, self.texture_id02, self.texture_id03]
         self.texture_galaxy = load_texture("/galaxy_tex.png")
         
-        # self.brick = OneHitBrick(Point(0, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
         # self.brick2 = OneHitBrick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
         self.brickArray = []
         for i in range(5):
@@ -86,7 +85,11 @@ class GraphicsProgram3D:
         self.ball.motion = Vector(-1.5, 1.7, 0)
 
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
-        self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "metallic_sphere.obj")
+        # self.brick = Brick(Point(0, 0, 0), 2.45, 2, Color(1.0, 0.0, 0.0))
+        self.platform = Platform(Point(0,0,0))
+        # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/container/", "Container.obj")
+        # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "eyeball_obj.obj")
+        # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "metallic_sphere.obj")
 
 
         self.pauseTime = 0.0
@@ -183,13 +186,18 @@ class GraphicsProgram3D:
         
         self.model_matrix.load_identity()
 
-        self.shader.set_using_tex(1.0)        
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_scale(5, 5, 5)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.obj_model.draw(self.shader)
-        self.model_matrix.pop_matrix()
-        self.shader.set_using_tex(0.0)        
+        self.platform.display(self.model_matrix, self.shader)
+        # self.model_matrix.push_matrix()
+        # self.model_matrix.add_translation(0.014, 0, 0)
+        # self.model_matrix.add_rotate_x(-pi/2)
+        # self.model_matrix.add_scale(0.00345, 0.00345, 0.00345)
+        # self.shader.set_model_matrix(self.model_matrix.matrix)
+        # self.obj_model.draw(self.shader)
+        # self.model_matrix.pop_matrix()
+
+        # self.brickArray[0].set_vertices(self.shader)
+
+        # self.brick.display(self.model_matrix, self.shader)
 
 
         self.shader.set_using_tex(1.0)        
