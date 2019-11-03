@@ -127,9 +127,9 @@ class ViewMatrix:
     def slide(self, del_u, del_v, del_n):
         self.eye += self.u * del_u + self.v * del_v + self.n * del_n
 
-    def arcFollow(self, arcX, arcZ, center):
+    def arcFollow(self, arcX, arcZ, center, magnitude):
         self.eye.x = arcX
-        self.eye.z = arcZ - (arcX / arcZ)
+        self.eye.z = arcZ - (abs(arcX) / arcZ) * magnitude
         self.look(self.eye, center, Vector(0, 1, 0))
 
     def roll(self, angle):

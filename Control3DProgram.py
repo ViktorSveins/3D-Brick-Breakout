@@ -191,6 +191,9 @@ class GraphicsProgram3D:
 
         self.brickArray = tmpList
 
+        for i in range(len(self.ballArray)):
+            self.ballArray[i] = self.platform.collision(self.ballArray[i], delta_time)
+
         if self.UP_key_down:
             self.view_matrix.pitch((pi / 2) * delta_time)
         if self.DOWN_key_down:
@@ -198,12 +201,12 @@ class GraphicsProgram3D:
 
         if self.LEFT_key_down:
             self.platform.slide(-3 * delta_time)
-            self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0))
+            self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0), 15)
             # self.view_matrix.slide(-3 * delta_time, 0, 0 )
             # self.view_matrix.yaw(-(pi / 2) * delta_time)
         if self.RIGHT_key_down:
             self.platform.slide(3 * delta_time)
-            self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0))
+            self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0), 15)
             # self.view_matrix.slide(3 * delta_time, 0, 0)
             # self.view_matrix.yaw((pi / 2) * delta_time)
 
