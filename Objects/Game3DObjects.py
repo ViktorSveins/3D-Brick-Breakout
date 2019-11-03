@@ -203,3 +203,6 @@ class Platform(Brick):
         shader.set_model_matrix(model_matrix.matrix)
         self.container.draw(shader)
         model_matrix.pop_matrix()
+
+    def slide(self, x):
+        self.pos.x += x

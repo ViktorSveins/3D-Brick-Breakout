@@ -149,10 +149,17 @@ class GraphicsProgram3D:
             self.view_matrix.pitch((pi / 2) * delta_time)
         if self.DOWN_key_down:
             self.view_matrix.pitch(-(pi / 2) * delta_time)
+
         if self.LEFT_key_down:
-            self.view_matrix.yaw(-(pi / 2) * delta_time)
+            self.platform.slide(-3 * delta_time)
+            self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0))
+            # self.view_matrix.slide(-3 * delta_time, 0, 0 )
+            # self.view_matrix.yaw(-(pi / 2) * delta_time)
         if self.RIGHT_key_down:
-            self.view_matrix.yaw((pi / 2) * delta_time)
+            self.platform.slide(3 * delta_time)
+            self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0))
+            # self.view_matrix.slide(3 * delta_time, 0, 0)
+            # self.view_matrix.yaw((pi / 2) * delta_time)
 
         if self.w_key_down:
             self.view_matrix.slide(0, 0, -3 * delta_time)
@@ -177,7 +184,7 @@ class GraphicsProgram3D:
             self.fov += 0.25 * delta_time
         if self.g_key_down:
             self.fov -= 0.25 * delta_time
-            
+        
 
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
