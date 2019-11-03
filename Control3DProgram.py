@@ -18,6 +18,7 @@ from texture_loading import *
 from Objects.Environment import *
 from BezierMotion import *
 
+import time
 import ojb_3D_loading
 
 level = 0
@@ -42,9 +43,6 @@ class GraphicsProgram3D:
 
         self.projection_matrix = ProjectionMatrix()
         self.fov = pi / 4
-        
-        self.clock = pygame.time.Clock()
-        self.clock.tick()
 
         self.LEFT_key_down = False
         self.RIGHT_key_down = False
@@ -60,6 +58,9 @@ class GraphicsProgram3D:
         self.texture_amethyst_specular = load_texture("/amethyst-specular.png")
         self.texture_galaxy = load_texture("/skydome.jpeg")
         self.crack_textures = [self.texture_crack01, self.texture_crack02, self.texture_crack03]
+
+        self.clock = pygame.time.Clock()
+        self.clock.tick()
         
         global level
         level += 1
@@ -115,9 +116,10 @@ class GraphicsProgram3D:
         self.spotlightPos = Point(100.0, -100.0, 75)
         self.spotlightColor = Color(0.9, 0.1, 0.1)
 
-        ### used for testing here
-        self.sphere = Sphere(24, 48)
-        self.sprite = Sprite()
+        # ### used for testing here
+        # self.sphere = Sphere(24, 48)
+        # self.sprite = Sprite()
+        self.initLoad = True
         
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -134,6 +136,8 @@ class GraphicsProgram3D:
                 if self.view_matrix.eye.z <= 0 and not self.stageDrawn:
                     self.brickArray = []
                     self.remakeStage()
+                    self.ball.reset(self.platform)
+                    self.brickAnimation = []
                 self.restartAnimation(delta_time)
                 return
             else:
@@ -143,13 +147,13 @@ class GraphicsProgram3D:
                 self.setRestart = False
                 self.restartBezierMovement = []
                 self.restartPlatformMovement= []
-                self.ball.reset(self.platform)
         
         if self.lost:
             if not self.restartlevel.animationFinished:
                 if self.view_matrix.eye.z <= 0 and not self.stageDrawn:
                     self.brickArray = []
                     self.remakeStage()
+                    self.lives = 3
                 self.restartAnimation(delta_time)
                 return
             else:
@@ -182,12 +186,12 @@ class GraphicsProgram3D:
             self.lightMotion.animationTime = 0
             self.lightMotion.animationFinished = False
 
-        self.fr_sum += delta_time
-        self.fr_ticker += 1
-        if self.fr_sum > 1.0:
-            print(self.fr_ticker / self.fr_sum)
-            self.fr_sum = 0
-            self.fr_ticker = 0
+        # self.fr_sum += delta_time
+        # self.fr_ticker += 1
+        # if self.fr_sum > 1.0:
+        #     print(self.fr_ticker / self.fr_sum)
+        #     self.fr_sum = 0
+        #     self.fr_ticker = 0
 
         tmpAnimList = []
         for brick in self.brickAnimation:

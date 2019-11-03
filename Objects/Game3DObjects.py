@@ -247,8 +247,8 @@ class Platform:
 
     def slide(self, x, frameWidth):
         xMax = frameWidth / 2 - self.w / 2 
-        print(f"xmax {xMax}")
-        print(f"x {self.pos.x}")
+        # print(f"xmax {xMax}")
+        # print(f"x {self.pos.x}")
         if (self.pos.x < -xMax and x < 0) or (self.pos.x > xMax and x > 0):
             return
 
