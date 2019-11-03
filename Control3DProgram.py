@@ -47,20 +47,8 @@ class GraphicsProgram3D:
 
         self.angle = 0
 
-        self.UP_key_down = False  
-        self.DOWN_key_down = False
         self.LEFT_key_down = False
         self.RIGHT_key_down = False
-        self.w_key_down = False
-        self.s_key_down = False
-        self.a_key_down = False
-        self.d_key_down = False
-        self.t_key_down = False
-        self.g_key_down = False
-        self.q_key_down = False
-        self.e_key_down = False
-        self.z_key_down = False
-        self.x_key_down = False
         self.pause_game = False
 
         self.texture_id01 = load_texture("/crack1.png")
@@ -198,11 +186,6 @@ class GraphicsProgram3D:
             self.ballArray[i] = self.platform.collision(self.ballArray[i], delta_time)
             self.ballArray[i] = self.frame.collision(self.ballArray[i], delta_time)
 
-        if self.UP_key_down:
-            self.view_matrix.pitch((pi / 2) * delta_time)
-        if self.DOWN_key_down:
-            self.view_matrix.pitch(-(pi / 2) * delta_time)
-
         if self.LEFT_key_down:
             self.platform.slide(-3 * delta_time)
             self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0), 15)
@@ -213,30 +196,6 @@ class GraphicsProgram3D:
             self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0), 15)
             # self.view_matrix.slide(3 * delta_time, 0, 0)
             # self.view_matrix.yaw((pi / 2) * delta_time)
-
-        if self.w_key_down:
-            self.view_matrix.slide(0, 0, -3 * delta_time)
-        if self.s_key_down:
-            self.view_matrix.slide(0, 0, 3 * delta_time)
-        if self.a_key_down:
-            self.view_matrix.slide(-3 * delta_time, 0, 0)
-        if self.d_key_down:
-            self.view_matrix.slide(3 * delta_time, 0, 0)
-
-        if self.q_key_down:
-            self.view_matrix.roll((pi / 2) * delta_time)
-        if self.e_key_down:
-            self.view_matrix.roll(-(pi / 2) * delta_time)
-
-        if self.z_key_down:
-            self.view_matrix.slide(0, -1 * delta_time, 0)            
-        if self.x_key_down:
-            self.view_matrix.slide(0, 1 * delta_time, 0)
-
-        if self.t_key_down:
-            self.fov += 0.25 * delta_time
-        if self.g_key_down:
-            self.fov -= 0.25 * delta_time
         
 
     def display(self):
@@ -376,68 +335,19 @@ class GraphicsProgram3D:
                         print("Escaping!")
                         exiting = True
                         
-                    if event.key == K_UP:
-                        self.UP_key_down = True
-                    if event.key == K_DOWN:
-                        self.DOWN_key_down = True
                     if event.key == K_LEFT:
                         self.LEFT_key_down = True
                     if event.key == K_RIGHT:
                         self.RIGHT_key_down = True
 
-                    if event.key == K_w:
-                        self.w_key_down = True
-                    if event.key == K_s:
-                        self.s_key_down = True
-                    if event.key == K_a:
-                        self.a_key_down = True
-                    if event.key == K_d:
-                        self.d_key_down = True
-                    if event.key == K_t:
-                        self.t_key_down = True
-                    if event.key == K_g:
-                        self.g_key_down = True
-                    if event.key == K_q:
-                        self.q_key_down = True
-                    if event.key == K_e:
-                        self.e_key_down = True
-                    if event.key == K_z:
-                        self.z_key_down = True
-                    if event.key == K_x:
-                        self.x_key_down = True
                     if event.key == K_p:
                         self.pause_game = not self.pause_game
                         
                 elif event.type == pygame.KEYUP:
-                    if event.key == K_UP:
-                        self.UP_key_down = False
-                    if event.key == K_DOWN:
-                        self.DOWN_key_down = False
                     if event.key == K_LEFT:
                         self.LEFT_key_down = False
                     if event.key == K_RIGHT:
                         self.RIGHT_key_down = False
-                    
-                    if event.key == K_w:
-                        self.w_key_down = False
-                    if event.key == K_s:
-                        self.s_key_down = False
-                    if event.key == K_a:
-                        self.a_key_down = False
-                    if event.key == K_d:
-                        self.d_key_down = False
-                    if event.key == K_t:
-                        self.t_key_down = False
-                    if event.key == K_g:
-                        self.g_key_down = False
-                    if event.key == K_q:
-                        self.q_key_down = False
-                    if event.key == K_e:
-                        self.e_key_down = False
-                    if event.key == K_z:
-                        self.z_key_down = False
-                    if event.key == K_x:
-                        self.x_key_down = False
 
             self.update()
             self.display()
