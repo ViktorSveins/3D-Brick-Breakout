@@ -203,3 +203,17 @@ class Platform(Brick):
         shader.set_model_matrix(model_matrix.matrix)
         self.container.draw(shader)
         model_matrix.pop_matrix()
+
+    def slide(self, x):
+        self.pos.x += x
+        
+        self.corner_1 = Point(self.pos.x - self.w / 2, self.pos.y - self.h /2, 0)
+        self.corner_2 = Point(self.pos.x - self.w / 2, self.pos.y + self.h /2, 0)
+        self.corner_3 = Point(self.pos.x + self.w / 2, self.pos.y + self.h /2, 0)
+        self.corner_4 = Point(self.pos.x + self.w / 2, self.pos.y - self.h /2, 0)
+
+        self.sides = []
+        self.sides.append(LineObstacle(self.corner_1, self.corner_2))
+        self.sides.append(LineObstacle(self.corner_2, self.corner_3))
+        self.sides.append(LineObstacle(self.corner_4, self.corner_3))
+        self.sides.append(LineObstacle(self.corner_1, self.corner_4))
