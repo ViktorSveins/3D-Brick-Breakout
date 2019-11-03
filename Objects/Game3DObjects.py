@@ -217,3 +217,54 @@ class Platform(Brick):
         self.sides.append(LineObstacle(self.corner_2, self.corner_3))
         self.sides.append(LineObstacle(self.corner_4, self.corner_3))
         self.sides.append(LineObstacle(self.corner_1, self.corner_4))
+
+class Wall(Cube):
+    def __init__(self, position, width, height, color):
+        super().__init__()
+        self.pos = position
+        self.w = width
+        self.h = height
+        self.l = 1
+        self.color = color
+    
+    def display(self, model_matrix, shader):
+        shader.set_material_diffuse(self.color)
+        model_matrix.push_matrix()
+        model_matrix.add_translation(self.pos.x, self.pos.y, self.pos.z)
+        model_matrix.add_scale(self.w, self.h, self.l)
+        shader.set_model_matrix(model_matrix.matrix)
+        self.draw(shader)
+        model_matrix.pop_matrix()
+    
+
+class Frame:
+    def __init__(self, platform_position, width, height):
+        self.corner_1 = Point(platform_position.x - width / 2, platform_position.y, 0)
+        self.corner_2 = Point(platform_position.x - width / 2, platform_position.y + height, 0)
+        self.corner_3 = Point(platform_position.x + width / 2, platform_position.y + height, 0)
+        self.corner_4 = Point(platform_position.x + width / 2, platform_position.y, 0)
+
+        self.sides = []
+        self.sides.append(LineObstacle(self.corner_1, self.corner_2))
+        self.sides.append(LineObstacle(self.corner_2, self.corner_3))
+        self.sides.append(LineObstacle(self.corner_4, self.corner_3))
+
+        self.walls = []
+        wallwidth = 0.5
+        wallcolor = Color(1.0, 0.84, 0.0)
+        self.walls.append(Wall(Point(self.corner_1.x - wallwidth / 2, platform_position.y + height / 2, 0), wallwidth, height, wallcolor))
+        self.walls.append(Wall(Point(self.corner_3.x + wallwidth / 2, platform_position.y + height / 2, 0), wallwidth, height, wallcolor))
+        self.walls.append(Wall(Point(platform_position.x, self.corner_2.y + wallwidth / 2, 0), width + wallwidth * 2, wallwidth, wallcolor))
+
+    def collision(self, ball, delta_time):
+        for side in self.sides:
+            collidedBall = side.collision(ball, delta_time)
+            if collidedBall != ball:
+                self.collided = True
+                return collidedBall
+        return ball
+    
+    def display(self, model_matrix, shader):
+        for wall in self.walls:
+            wall.display(model_matrix, shader)
+        
