@@ -26,18 +26,6 @@ class Point:
     def __str__(self):
         return f"x: {self.x}, y: {self.y}, z: {self.z}"
         
-# class Color:
-#     def __init__(self, r, g, b):
-#         self.r = r
-#         self.g = g
-#         self.b = b
-
-#     def __add__(self, other):
-#         return Color(self.r + other.r, self.g + other.g, self.b + other.b, self.a + other.a)
-
-#     def __sub__(self, other):
-#         return Color(self.r - other.r, self.g - other.g, self.b - other.b, self.a - other.a)
-
 class Line:
     def __init__(self, point_1, point_2):
         self.point_1 = point_1
@@ -220,9 +208,6 @@ class Sphere:
         glBufferData(GL_ARRAY_BUFFER, numpy.array(vertex_array, dtype='float32'), GL_STATIC_DRAW)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         vertex_array = None
-    
-    # def set_vertices(self, shader):
-    #     shader.set_attribute_buffers(self.vertex_buffer_id)
 
     def draw(self, shader):
         shader.set_attribute_buffers_with_uv(self.vertex_buffer_id)

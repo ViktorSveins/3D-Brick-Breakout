@@ -121,7 +121,7 @@ class GraphicsProgram3D:
         # self.brickArray.append(self.brick3)
         self.ballArray = []
         self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
-        self.ball.motion = Vector(-1.5, 0.9, 0)
+        self.ball.motion = Vector(-1.5, 1.7, 0)
 
         self.ball2 = Ball(Point(19.0, 4, 0.0), 0.5)
         self.ball2.motion = Vector(-1.5, 1.7, 0)
@@ -141,7 +141,6 @@ class GraphicsProgram3D:
 
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "metallic_sphere.obj")
-
 
         self.pauseTime = 0.0
 
@@ -170,9 +169,12 @@ class GraphicsProgram3D:
         self.angle += pi * delta_time
         # #     angle -= (2 * pi)
 
-        # for brick in self.brickAnimation:
-        #     brick.updateAnimation(delta_time)
-        #     if
+        tmpAnimList = []
+        for brick in self.brickAnimation:
+            brick.updateAnimation(delta_time)
+            if brick.animationTime <= 4:
+                tmpAnimList.append(brick)
+        self.brickAnimation = tmpAnimList
         
         for ball in self.ballArray:
             ball.update(delta_time)
@@ -300,6 +302,9 @@ class GraphicsProgram3D:
         self.shader.set_using_tex(0.0)
 
         for brick in self.brickArray:
+            brick.display(self.model_matrix, self.shader)
+
+        for brick in self.brickAnimation:
             brick.display(self.model_matrix, self.shader)
 
         ####################
