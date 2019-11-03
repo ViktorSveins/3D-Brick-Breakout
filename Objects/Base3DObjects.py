@@ -26,6 +26,8 @@ class Point:
     def __str__(self):
         return f"x: {self.x}, y: {self.y}, z: {self.z}"
         
+    def __mul__(self, other):
+        return Point(self.x * other, self.y * other, self.z * other)
 class Line:
     def __init__(self, point_1, point_2):
         self.point_1 = point_1

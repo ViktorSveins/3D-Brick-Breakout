@@ -58,6 +58,10 @@ class Shader3D:
         self.specTexLoc                 = glGetUniformLocation(self.renderingProgramID, "u_tex02")
 
         self.usingTex                 = glGetUniformLocation(self.renderingProgramID, "u_using_texture")
+
+        self.spotLightPosLoc                 = glGetUniformLocation(self.renderingProgramID, "u_spotlight_position")
+        self.spotLightDiffLoc                 = glGetUniformLocation(self.renderingProgramID, "u_spotlight_diffuse")
+        self.spotLightSpecLoc                 = glGetUniformLocation(self.renderingProgramID, "u_spotlight_specular")
         
 
     def use(self):
@@ -129,6 +133,17 @@ class Shader3D:
 
     def set_using_tex(self, num):
         glUniform1f(self.usingTex, num)
+
+    # Spotlight
+    def set_spotlight_position(self, pos):
+        glUniform4f(self.spotLightPosLoc, pos.x, pos.y, pos.z, 1.0)
+
+    def set_spotlight_diffuse(self, color):
+        glUniform4f(self.spotLightDiffLoc, color.r, color.g, color.b, 1.0)
+    
+    def set_spotlight_specular(self, color):
+        glUniform4f(self.spotLightSpecLoc, color.r, color.g, color.b, 1.0)
+    # Spotlight ends
 
 #############################################################################################################################################
 class SpriteShader:

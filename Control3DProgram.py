@@ -16,6 +16,7 @@ from Objects.GameBricks import *
 from Objects.Base3DObjects import *
 from texture_loading import *
 from Objects.Environment import *
+from BezierMotion import *
 
 import ojb_3D_loading
 
@@ -136,6 +137,23 @@ class GraphicsProgram3D:
         self.fr_ticker = 0.0
         self.fr_sum = 0.0
 
+        # Start intro with bezier motion
+        self.intro = Intro()
+        self.bezierPositions = [Point(0.0, 4.0, 30), Point(50.0, 20.0, 50.0), Point(50.0, 20.0, -100.0), Point(-100.0, 20.0, -100.0),
+                                Point(-100.0, 20.0, 50.0), Point(-50.0, 2.0, 50.0), Point(100.0, 2.0, 50.0), Point(100.0, 2.0, -60.0),
+                                Point(-120.0, 2.0, -60.0), Point(-30.0, 2.0, 30.0), Point(50.0, 20.0, 50.0), Point(0.0, 4.0, 30)]
+        self.introLook = Intro()
+        self.bezierLookPosit = [Point(0.0, 11.0, 0), Point(0.0, 11.0, 0), Point(0.0, 11.0, 0), Point(0.0, 11.0, 0), Point(0.0, 11.0, 0),
+                                Point(0.0, 0.0, 0), Point(0.0, 0.0, 0), Point(0.0, 0.0, 0), Point(0.0, 0.0, 0), Point(0.0, 0.0, 0),
+                                Point(0.0, 11.0, 0), Point(0.0, 11.0, 0)]
+        self.lightPos = self.view_matrix.eye
+        
+        # Spotlight
+        self.lightMotion = Motion(10.0)
+        self.lightMotionArray = [Point(100.0, -100.0, 75), Point(100.0, 100.0, 75), Point(-100.0, 100.0, 75), Point(-100.0, -100.0, 75), Point(100.0, -100.0, 75)]
+        self.spotlightPos = Point(100.0, -100.0, 75)
+        self.spotlightColor = Color(0.9, 0.1, 0.1)
+
         ### used for testing here
         self.sphere = Sphere(24, 48)
         self.sprite = Sprite()
@@ -146,6 +164,16 @@ class GraphicsProgram3D:
         delta_time = self.clock.tick() / 1000.0
         if self.pause_game:
             return
+
+        if not self.intro.animationFinished:
+            self.view_matrix.look(self.intro.bezierMotionAnimation(delta_time, self.bezierPositions), self.introLook.bezierMotionAnimation(delta_time, self.bezierLookPosit), Vector(0, 1, 0))
+            self.lightPos = self.view_matrix.eye
+            return
+        
+        self.spotlightPos = self.lightMotion.bezierMotionAnimation(delta_time, self.lightMotionArray)
+        if self.lightMotion.animationFinished:
+            self.lightMotion.animationTime = 0
+            self.lightMotion.animationFinished = False
 
         self.fr_sum += delta_time
         self.fr_ticker += 1
@@ -239,10 +267,18 @@ class GraphicsProgram3D:
         self.shader.set_eye_position(self.view_matrix.eye)
 
         self.shader.set_view_matrix((self.view_matrix.get_matrix()))
+
+        # Light
         # self.shader.set_light_position(Point(0.0, 20.0, 10.0))
-        self.shader.set_light_position(self.view_matrix.eye)
+        self.shader.set_light_position(self.lightPos)
         self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_specular(1.0, 1.0, 1.0)
+
+        # SpotLight
+        self.shader.set_spotlight_position(self.spotlightPos)
+        self.shader.set_spotlight_diffuse(self.spotlightColor)
+        self.shader.set_spotlight_specular(self.spotlightColor)
+
 
         self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_material_shininess(5.0)
