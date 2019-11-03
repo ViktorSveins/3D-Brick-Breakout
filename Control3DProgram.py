@@ -146,6 +146,7 @@ class GraphicsProgram3D:
                 self.setRestart = False
                 self.restartBezierMovement = []
                 self.restartPlatformMovement= []
+                # TODO Endurstilla boltann hér
         
         if self.lost:
             if not self.restartlevel.animationFinished:
@@ -162,7 +163,25 @@ class GraphicsProgram3D:
                 self.restartBezierMovement = []
                 self.restartPlatformMovement= []
         
-        
+        if self.ball.pos.y <= 0:
+            self.lives -= 1
+            if self.lives > 0:
+                # TODO Endurstilla boltann hér, veit að þetta virkar ekki
+                self.ball.motion = Vector(0,0,0)
+                self.ball.shooting = False
+                self.ball.pos = Point(self.platform.pos.x, self.platform.pos.y + self.platform.h / 2 + 0.5, 0)
+            else:
+                self.lost = True
+                self.stageDrawn = False
+                global level
+                level = 1
+                # TODO Þarf líka að endurstilla boltann hér
+
+        if len(self.brickArray) == 0:
+            self.win = True
+            self.stageDrawn = False
+            if level < 3:
+                level += 1
         
         self.spotlightPos = self.lightMotion.bezierMotionAnimation(delta_time, self.lightMotionArray)
         if self.lightMotion.animationFinished:
@@ -371,9 +390,6 @@ class GraphicsProgram3D:
                         self.SPACE_key_down = True
                     if event.key == K_p:
                         self.pause_game = not self.pause_game
-                    if event.key == K_u:
-                        self.win = not self.win
-                        self.stageDrawn = False #TODO move this
                         
                 elif event.type == pygame.KEYUP:
                     if event.key == K_LEFT:
