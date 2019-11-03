@@ -215,10 +215,10 @@ class GraphicsProgram3D:
         self.ball = self.frame.collision(self.ball, delta_time)
 
         if self.LEFT_key_down:
-            self.platform.slide(-5 * delta_time)
+            self.platform.slide(-5 * delta_time, self.frame.w)
             self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0), 15)
         if self.RIGHT_key_down:
-            self.platform.slide(5 * delta_time)
+            self.platform.slide(5 * delta_time, self.frame.w)
             self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0), 15)
         if self.SPACE_key_down:
             self.ball.shooting = True

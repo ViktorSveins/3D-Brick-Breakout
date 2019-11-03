@@ -245,7 +245,13 @@ class Platform:
         self.container.draw(shader)
         model_matrix.pop_matrix()
 
-    def slide(self, x):
+    def slide(self, x, frameWidth):
+        xMax = frameWidth / 2 - self.w / 2 
+        print(f"xmax {xMax}")
+        print(f"x {self.pos.x}")
+        if (self.pos.x < -xMax and x < 0) or (self.pos.x > xMax and x > 0):
+            return
+
         self.pos.x += x
         
         self.corner_1 = Point(self.pos.x - self.w / 2, self.pos.y - self.h /2, 0)
@@ -288,6 +294,8 @@ class Wall(Cube):
 
 class Frame:
     def __init__(self, platform_position, width, height):
+        self.w = width
+        self.h = height
         self.corner_1 = Point(platform_position.x - width / 2, platform_position.y, 0)
         self.corner_2 = Point(platform_position.x - width / 2, platform_position.y + height, 0)
         self.corner_3 = Point(platform_position.x + width / 2, platform_position.y + height, 0)
