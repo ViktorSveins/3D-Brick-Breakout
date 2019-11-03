@@ -65,11 +65,12 @@ class Brick(Cube):
         
 
 class Ball(Sphere):
-    def __init__(self, position, size, texture):
+    def __init__(self, position, size, texture_diffuse, texture_specular):
         super().__init__(12, 24)
         self.pos = position
         self.size = size
-        self.texture = texture
+        self.tex_diffuse = texture_diffuse
+        self.tex_specular = texture_specular
         self.shininess = 50.0
         self.radius = (self.size + 0.5) / 2
         self.shooting = False
@@ -78,22 +79,26 @@ class Ball(Sphere):
         self.collided = False
         self.speed = 10
 
-    def reset(self):
+    def reset(self, platform):
         self.shot = False
         self.shooting = False
         self.motion = Vector(0,0,0)
-        self.pos = Point(self.platform.pos.x, self.platform.pos.y + self.platform.h / 2 + 0.5, 0)
+        self.pos = Point(platform.pos.x, platform.pos.y + platform.h / 2 + 0.5, 0)
 
     def display(self, model_matrix, shader):
         model_matrix.push_matrix()
         shader.set_using_tex(1.0)
         glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.texture)
+        glBindTexture(GL_TEXTURE_2D, self.tex_diffuse)
+        shader.set_dif_tex(0)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_specular)
+        shader.set_spec_tex(1)
         model_matrix.add_translation(self.pos.x, self.pos.y, self.pos.z)
         model_matrix.add_scale(self.size, self.size, self.size)
         shader.set_model_matrix(model_matrix.matrix)
         self.draw(shader)
-        shader.set_dif_tex(0)
+        shader.set_using_tex(0.0)
         model_matrix.pop_matrix()
 
     def update(self, platform_position, delta_time):
