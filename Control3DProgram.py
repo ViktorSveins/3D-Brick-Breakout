@@ -70,17 +70,18 @@ class GraphicsProgram3D:
         # self.brick2 = OneHitBrick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
         self.brickArray = []
         for i in range(5):
-            brick = ThreeHitBrick(Point(i * 3, 11, 0), 3, 1, self.textures)
+            brick = ThreeHitBrick(Point(i * 3, 11, 0), 2.5, 0.5, self.textures)
             self.brickArray.append(brick)
-            brick = TwoHitBrick(Point(i * 3, 5, 0), 3, 1, self.textures)
+            brick = TwoHitBrick(Point(i * 3, 5, 0), 2.5, 0.5, self.textures)
             self.brickArray.append(brick)
 
         for i in range(1, 5):
-            brick = OneHitBrick(Point(-i * 3, 11, 0), 3, 1, self.textures)
+            brick = OneHitBrick(Point(-i * 3, 11, 0), 2.5, 0.5, self.textures)
             self.brickArray.append(brick)
-            brick = ThreeHitBrick(Point(-i * 3, 5, 0), 3, 1, self.textures)
+            brick = ThreeHitBrick(Point(-i * 3, 5, 0), 2.5, 0.5, self.textures)
             self.brickArray.append(brick)
-        # self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
+        # self.brick3 = TwoHitBrick(Point(0, 7, 0), 3.5, 0.5, self.textures)
+        # self.brickArray.append(self.brick3)
         self.ballArray = []
         self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
         self.ball.motion = Vector(-1.5, 1.7, 0)
@@ -272,10 +273,10 @@ class GraphicsProgram3D:
         ####################
 
         ##### Adding to sprite shader how to draw with alpha image #####
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        # glEnable(GL_BLEND)
+        # glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        # glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        # glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         
         # self.sprite_shader.use()
         # self.sprite_shader.set_projection_matrix(self.projection_matrix.get_matrix())
@@ -297,7 +298,7 @@ class GraphicsProgram3D:
         # self.sprite.draw(self.sprite_shader)
         # self.model_matrix.pop_matrix()
 
-        glDisable(GL_BLEND)
+        # glDisable(GL_BLEND)
 
         pygame.display.flip()
 
