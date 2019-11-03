@@ -36,7 +36,7 @@ class GraphicsProgram3D:
         self.model_matrix = ModelMatrix()
 
         self.view_matrix = ViewMatrix()
-        self.view_matrix.look(Point(3.0, 6.0, 20), Point(3.0, 6.0, 0), Vector(0, 1, 0))
+        self.view_matrix.look(Point(0.0, 0.0, 3), Point(0.0, 0.0, 0), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.projection_matrix = ProjectionMatrix()
@@ -63,11 +63,11 @@ class GraphicsProgram3D:
         self.x_key_down = False
         self.pause_game = False
 
-        self.texture_id01 = load_texture("/Textures/crack1.png")
-        self.texture_id02 = load_texture("/Textures/crack2.png")
-        self.texture_id03 = load_texture("/Textures/crack3.png")
+        self.texture_id01 = load_texture("/crack1.png")
+        self.texture_id02 = load_texture("/crack2.png")
+        self.texture_id03 = load_texture("/crack3.png")
         self.textures = [self.texture_id01, self.texture_id02, self.texture_id03]
-        self.texture_galaxy = load_texture("/Textures/skydome.jpeg")
+        self.texture_galaxy = load_texture("/skydome.jpeg")
         
         global level
         level += 1
@@ -135,6 +135,7 @@ class GraphicsProgram3D:
         self.ballArray.append(self.ball3)
         self.ballArray.append(self.ball4)
         self.skydome = Skysphere()
+        self.platform = Platform(Point(0, 0, 0))
 
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "metallic_sphere.obj")
@@ -149,8 +150,8 @@ class GraphicsProgram3D:
         ### used for testing here
         self.sphere = Sphere(24, 48)
         self.sprite = Sprite()
-        self.texture_leaf_color = load_texture("/Textures/test_leaf_01.jpg")
-        self.texture_leaf_alpha = load_texture("/Textures/test_leaf_01_alpha.jpg")
+        self.texture_leaf_color = load_texture("/test_leaf_01.jpg")
+        self.texture_leaf_alpha = load_texture("/test_leaf_01_alpha.jpg")
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -256,8 +257,8 @@ class GraphicsProgram3D:
         self.shader.set_eye_position(self.view_matrix.eye)
 
         self.shader.set_view_matrix((self.view_matrix.get_matrix()))
-        self.shader.set_light_position(Point(0.0, 20.0, 10.0))
-        # self.shader.set_light_position(self.view_matrix.eye)
+        # self.shader.set_light_position(Point(0.0, 20.0, 10.0))
+        self.shader.set_light_position(self.view_matrix.eye)
         self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_specular(1.0, 1.0, 1.0)
 
@@ -265,16 +266,18 @@ class GraphicsProgram3D:
         self.shader.set_material_shininess(5.0)
         
 
-        # self.shader.set_using_tex(1.0)        
-        # glActiveTexture(GL_TEXTURE0)
-        # glBindTexture(GL_TEXTURE_2D, self.texture_id01)
-        # self.shader.set_dif_tex(0)
+        self.platform.display(self.model_matrix, self.shader)
         # self.model_matrix.push_matrix()
-        # self.model_matrix.add_scale(1, 1, 1)
+        # self.model_matrix.add_translation(0.014, 0, 0)
+        # self.model_matrix.add_rotate_x(-pi/2)
+        # self.model_matrix.add_scale(0.00345, 0.00345, 0.00345)
         # self.shader.set_model_matrix(self.model_matrix.matrix)
         # self.obj_model.draw(self.shader)
         # self.model_matrix.pop_matrix()
-        # self.shader.set_using_tex(0.0)        
+
+        # self.brickArray[0].set_vertices(self.shader)
+
+        # self.brick.display(self.model_matrix, self.shader)
 
 
         self.shader.set_using_tex(1.0)        

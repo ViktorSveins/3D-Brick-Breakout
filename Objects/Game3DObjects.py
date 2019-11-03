@@ -1,4 +1,5 @@
 from Objects.Base3DObjects import *
+from ojb_3D_loading import *
 
 class Brick(Cube):
     def __init__(self, position, width, height, color):
@@ -188,3 +189,17 @@ class LineObstacle(Line):
     
     def reflection(self, c_motion):
         return c_motion - self.normal_vector * (c_motion.dot(self.normal_vector) / (self.normal_vector.dot(self.normal_vector))) * 2
+
+class Platform(Brick):
+    def __init__(self, position):
+        super().__init__(position, 4, 3.26, Color(1.0, 0.0, 0.0))
+        self.container = load_obj_file(sys.path[0] + "/models/container/", "Container.obj")
+    
+    def display(self, model_matrix, shader):
+        model_matrix.push_matrix()
+        model_matrix.add_translation(self.pos.x + 0.02, self.pos.y, 0)
+        model_matrix.add_rotate_x(-pi/2)
+        model_matrix.add_scale(0.00563, 0.00563, 0.00563)
+        shader.set_model_matrix(model_matrix.matrix)
+        self.container.draw(shader)
+        model_matrix.pop_matrix()
