@@ -143,7 +143,7 @@ class GraphicsProgram3D:
                 self.setRestart = False
                 self.restartBezierMovement = []
                 self.restartPlatformMovement= []
-                self.ball.reset(self.platform)
+                self.ball.reset(Point(0, self.platform.pos.y + self.platform.h / 2 + 0.5, 0))
         
         if self.lost:
             if not self.restartlevel.animationFinished:
@@ -163,13 +163,13 @@ class GraphicsProgram3D:
         if self.ball.pos.y <= 0:
             self.lives -= 1
             if self.lives > 0:
-                self.ball.reset(self.platform)
+                self.ball.reset(Point(self.platform.pos.x, self.platform.pos.y + self.platform.h / 2 + 0.5, 0))
             else:
                 self.lost = True
                 self.stageDrawn = False
                 global level
                 level = 1
-                self.ball.reset(self.platform)
+                self.ball.reset(Point(0, self.platform.pos.y + self.platform.h / 2 + 0.5, 0))
 
         if len(self.brickArray) == 0:
             self.win = True
