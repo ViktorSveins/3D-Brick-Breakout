@@ -1,24 +1,23 @@
 from Objects.Game3DObjects import *
 
-class OneHitBrick(Brick):
-    def __init__(self, position, width, height, color, textures):
+
+class HitBrick(Brick):
+    def __init__(self, position, width, height, textures, color, maxHit):
         super().__init__(position, width, height, color)
-        self.hitCount = 1
+        self.maxHit = maxHit
         self.currentHits = 0
         self.textures = textures
+        self.destroy = False
 
     def update(self):
         if self.collided:
             self.collided = False
-            if self.currentHits == 3:
-                pass
-            else:
-                self.currentHits += 1
+            self.currentHits += 1
+            if self.currentHits >= self.maxHit:
+                self.destroy = True
 
     def display(self, model_matrix, shader):
-        # print(f"Collide: {self.collided}")
         if self.currentHits != 0:
-            # print("adding textures")
             shader.set_using_tex(1.0)
             glActiveTexture(GL_TEXTURE0)
             glBindTexture(GL_TEXTURE_2D, self.textures[self.currentHits - 1])
@@ -26,3 +25,15 @@ class OneHitBrick(Brick):
 
         super().display(model_matrix, shader)
         shader.set_using_tex(0.0)
+
+class OneHitBrick(HitBrick):
+    def __init__(self, position, width, height, textures):
+        super().__init__(position, width, height, textures, Color(0.15, 0.85, 0.10), 2)
+        
+class TwoHitBrick(HitBrick):
+    def __init__(self, position, width, height, textures):
+        super().__init__(position, width, height, textures, Color(0.80, 0.80, 0.10), 3)
+
+class ThreeHitBrick(HitBrick):
+    def __init__(self, position, width, height, textures):
+        super().__init__(position, width, height, textures, Color(0.85, 0.15, 0.10), 4)

@@ -192,16 +192,14 @@ class LineObstacle(Line):
 
 class Platform(Brick):
     def __init__(self, position):
-        super().__init__(position, 2.45, 2, Color(0.0, 0.0, 0.0))
+        super().__init__(position, 4, 3.26, Color(1.0, 0.0, 0.0))
         self.container = load_obj_file(sys.path[0] + "/models/container/", "Container.obj")
     
     def display(self, model_matrix, shader):
         model_matrix.push_matrix()
-        model_matrix.add_translation(self.pos.x + 0.014, self.pos.y, 0)
+        model_matrix.add_translation(self.pos.x + 0.02, self.pos.y, 0)
         model_matrix.add_rotate_x(-pi/2)
-        model_matrix.add_scale(0.00345, 0.00345, 0.00345)
+        model_matrix.add_scale(0.00563, 0.00563, 0.00563)
         shader.set_model_matrix(model_matrix.matrix)
         self.container.draw(shader)
         model_matrix.pop_matrix()
-
-        

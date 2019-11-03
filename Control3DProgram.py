@@ -34,7 +34,7 @@ class GraphicsProgram3D:
         self.model_matrix = ModelMatrix()
 
         self.view_matrix = ViewMatrix()
-        self.view_matrix.look(Point(0.0, 0.0, -10), Point(0.0, 0.0, 0), Vector(0, 1, 0))
+        self.view_matrix.look(Point(0.0, 0.0, 3), Point(0.0, 0.0, 0), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.projection_matrix = ProjectionMatrix()
@@ -65,30 +65,43 @@ class GraphicsProgram3D:
         self.texture_id02 = load_texture("/crack2.png")
         self.texture_id03 = load_texture("/crack3.png")
         self.textures = [self.texture_id01, self.texture_id02, self.texture_id03]
-        self.texture_galaxy = load_texture("/galaxy_tex.png")
+        self.texture_galaxy = load_texture("/skydome.jpeg")
         
         # self.brick2 = OneHitBrick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
         self.brickArray = []
         for i in range(5):
-            brick = OneHitBrick(Point(i * 3, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+            brick = ThreeHitBrick(Point(i * 3, 11, 0), 3, 1, self.textures)
             self.brickArray.append(brick)
-            brick = OneHitBrick(Point(i * 3, 5, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+            brick = TwoHitBrick(Point(i * 3, 5, 0), 3, 1, self.textures)
             self.brickArray.append(brick)
 
         for i in range(1, 5):
-            brick = OneHitBrick(Point(-i * 3, 11, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+            brick = OneHitBrick(Point(-i * 3, 11, 0), 3, 1, self.textures)
             self.brickArray.append(brick)
-            brick = OneHitBrick(Point(-i * 3, 5, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+            brick = ThreeHitBrick(Point(-i * 3, 5, 0), 3, 1, self.textures)
             self.brickArray.append(brick)
         # self.brick3 = Brick(Point(1.5, 5, 0), 3, 1, Color(1.0, 0.0, 0.0))
+        self.ballArray = []
         self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
         self.ball.motion = Vector(-1.5, 1.7, 0)
 
+        self.ball2 = Ball(Point(19.0, 4, 0.0), 0.5)
+        self.ball2.motion = Vector(-1.5, 1.7, 0)
+
+        self.ball3 = Ball(Point(20.0, 3, 0.0), 0.5)
+        self.ball3.motion = Vector(-1.5, 1.7, 0)
+
+        self.ball4 = Ball(Point(21.0, 2, 0.0), 0.5)
+        self.ball4.motion = Vector(-1.5, 1.7, 0)
+        
+        self.ballArray.append(self.ball)
+        self.ballArray.append(self.ball2)
+        self.ballArray.append(self.ball3)
+        self.ballArray.append(self.ball4)
+        self.skydome = Skysphere()
+        self.platform = Platform(Point(0, 0, 0))
+
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
-        # self.brick = Brick(Point(0, 0, 0), 2.45, 2, Color(1.0, 0.0, 0.0))
-        self.platform = Platform(Point(0,0,0))
-        # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/container/", "Container.obj")
-        # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "eyeball_obj.obj")
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "metallic_sphere.obj")
 
 
@@ -119,11 +132,17 @@ class GraphicsProgram3D:
         self.angle += pi * delta_time
         # #     angle -= (2 * pi)
         
-        self.ball.update(delta_time)
+        for ball in self.ballArray:
+            ball.update(delta_time)
 
+        tmpList = []
         for brick in self.brickArray:
-            self.ball = brick.collision(self.ball, delta_time)
-            brick.update()
+            for i in range(len(self.ballArray)):
+                self.ballArray[i] = brick.collision(self.ballArray[i], delta_time)
+                brick.update()
+            if not brick.destroy:
+                tmpList.append(brick)
+        self.brickArray = tmpList
 
         if self.UP_key_down:
             self.view_matrix.pitch((pi / 2) * delta_time)
@@ -162,11 +181,37 @@ class GraphicsProgram3D:
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
 
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
+        glClear(GL_COLOR_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
 
         glViewport(0, 0, 800, 600)
 
         glClearColor(1.0, 1.0, 1.0, 1.0)
+        
+        self.model_matrix.load_identity()
+
+        #### Skydome
+        glDisable(GL_DEPTH_TEST)
+        self.sprite_shader.use()
+        self.sprite_shader.set_projection_matrix(self.projection_matrix.get_matrix())
+        self.sprite_shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.texture_galaxy)
+        self.sprite_shader.set_dif_tex(0)
+        self.sprite_shader.set_alpha_tex(None)
+
+        self.sprite_shader.set_opacity(1.0)
+
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
+
+        self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
+        self.skydome.draw(self.sprite_shader)
+        self.model_matrix.pop_matrix()
+
+        glEnable(GL_DEPTH_TEST)
+        glClear(GL_DEPTH_BUFFER_BIT)
+        ##### Skydome ends
 
         self.shader.use()
 
@@ -176,7 +221,7 @@ class GraphicsProgram3D:
         self.shader.set_eye_position(self.view_matrix.eye)
 
         self.shader.set_view_matrix((self.view_matrix.get_matrix()))
-        # self.shader.set_light_position(Point(3.0, 10.0, 6.0))
+        # self.shader.set_light_position(Point(0.0, 20.0, 10.0))
         self.shader.set_light_position(self.view_matrix.eye)
         self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_specular(1.0, 1.0, 1.0)
@@ -184,7 +229,6 @@ class GraphicsProgram3D:
         self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_material_shininess(5.0)
         
-        self.model_matrix.load_identity()
 
         self.platform.display(self.model_matrix, self.shader)
         # self.model_matrix.push_matrix()
@@ -204,7 +248,8 @@ class GraphicsProgram3D:
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.texture_id01)
         self.shader.set_dif_tex(0)
-        self.ball.display(self.model_matrix, self.shader)
+        for ball in self.ballArray:
+            ball.display(self.model_matrix, self.shader)
         self.shader.set_using_tex(0.0)
 
         self.brickArray[0].set_vertices(self.shader)
@@ -226,11 +271,11 @@ class GraphicsProgram3D:
         #     self.model_matrix.pop_matrix()
         ####################
 
-        ##### Adding to sprite shader #####
-        # glEnable(GL_BLEND)
-        # glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        # glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        # glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        ##### Adding to sprite shader how to draw with alpha image #####
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         
         # self.sprite_shader.use()
         # self.sprite_shader.set_projection_matrix(self.projection_matrix.get_matrix())
