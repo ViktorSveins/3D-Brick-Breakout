@@ -19,6 +19,8 @@ from Objects.Environment import *
 
 import ojb_3D_loading
 
+level = 0
+
 class GraphicsProgram3D:
     def __init__(self):
 
@@ -67,24 +69,57 @@ class GraphicsProgram3D:
         self.textures = [self.texture_id01, self.texture_id02, self.texture_id03]
         self.texture_galaxy = load_texture("/skydome.jpeg")
         
-        # self.brick2 = OneHitBrick(Point(-2, 8, 0), 3, 1, Color(1.0, 0.0, 0.0), self.textures)
+        global level
+        level += 1
         self.brickArray = []
-        for i in range(5):
-            brick = ThreeHitBrick(Point(i * 3, 11, 0), 2.5, 0.5, self.textures)
-            self.brickArray.append(brick)
-            brick = TwoHitBrick(Point(i * 3, 5, 0), 2.5, 0.5, self.textures)
-            self.brickArray.append(brick)
+        y_coord = 11
+        for _ in range(level):
+            for i in range(4):
+                brick = ThreeHitBrick(Point(i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+        y_coord -= 0.75
 
-        for i in range(1, 5):
-            brick = OneHitBrick(Point(-i * 3, 11, 0), 2.5, 0.5, self.textures)
-            self.brickArray.append(brick)
-            brick = ThreeHitBrick(Point(-i * 3, 5, 0), 2.5, 0.5, self.textures)
-            self.brickArray.append(brick)
+        for _ in range(level):       
+            for i in range(4):
+                brick = TwoHitBrick(Point(i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+        y_coord -= 0.75
+        
+        for _ in range (level):
+            for i in range(4):
+                brick = OneHitBrick(Point(i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+        y_coord -= 0.75
+
+        y_coord = 11
+        for _ in range(level):
+            for i in range(1, 5):
+                brick = ThreeHitBrick(Point(-i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+        y_coord -= 0.75
+
+        for _ in range(level):       
+            for i in range(1, 5):
+                brick = TwoHitBrick(Point(-i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+        y_coord -= 0.75
+        
+        for _ in range (level):
+            for i in range(1, 5):
+                brick = OneHitBrick(Point(-i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+
         # self.brick3 = TwoHitBrick(Point(0, 7, 0), 3.5, 0.5, self.textures)
         # self.brickArray.append(self.brick3)
         self.ballArray = []
         self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
-        self.ball.motion = Vector(-1.5, 1.7, 0)
+        self.ball.motion = Vector(-1.5, 1.0, 0)
 
         self.ball2 = Ball(Point(19.0, 4, 0.0), 0.5)
         self.ball2.motion = Vector(-1.5, 1.7, 0)
@@ -260,23 +295,21 @@ class GraphicsProgram3D:
             ball.display(self.model_matrix, self.shader)
         self.shader.set_using_tex(0.0)
 
-        self.brickArray[0].set_vertices(self.shader)
-
         for brick in self.brickArray:
             brick.display(self.model_matrix, self.shader)
 
         ####################
-        # for i in range(8):
-        #     self.model_matrix.push_matrix()
-        #     self.model_matrix.add_rotate_x(self.angle * 0.74324 + i * pi / 4.0)
-        #     self.model_matrix.add_translation(0.0, 5.0, 10.0)
-        #     self.model_matrix.add_rotate_x(-(self.angle * 0.74324 + i * pi / 4.0))
-        #     self.model_matrix.add_scale(3.0, 3.0, 3.0)
-        #     self.shader.set_model_matrix(self.model_matrix.matrix)
+        for i in range(8):
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_rotate_x(self.angle * 0.74324 + i * pi / 4.0)
+            self.model_matrix.add_translation(0.0, 5.0, 10.0)
+            self.model_matrix.add_rotate_x(-(self.angle * 0.74324 + i * pi / 4.0))
+            self.model_matrix.add_scale(3.0, 3.0, 3.0)
+            self.shader.set_model_matrix(self.model_matrix.matrix)
 
-        #     self.shader.set_material_diffuse(Color(1.0, 1.0, 1.0))
-        #     self.sphere.draw(self.shader)
-        #     self.model_matrix.pop_matrix()
+            self.shader.set_material_diffuse(Color(1.0, 1.0, 1.0))
+            self.sphere.draw(self.shader)
+            self.model_matrix.pop_matrix()
         ####################
 
         ##### Adding to sprite shader how to draw with alpha image #####
