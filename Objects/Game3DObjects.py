@@ -56,7 +56,7 @@ class Brick(Cube):
         
         # Check the sides in the order defined above
         for side in sidesToCheck:
-            side.collision(ball, delta_time)
+            ball = side.collision(ball, delta_time)
             if ball.collided:
                 self.collided = True
                 ball.collided = False
@@ -76,6 +76,7 @@ class Ball(Sphere):
         self.shot = False
         self.motion = Vector(0,0,0)
         self.collided = False
+        self.speed = 10
 
     def display(self, model_matrix, shader):
         shader.set_material_diffuse(self.color)
@@ -92,7 +93,7 @@ class Ball(Sphere):
         else:
             self.pos.x = platform_position.x
             if self.shooting:
-                self.motion = Vector(random.uniform(-3, 3), 9, 0)
+                self.motion = Vector(random.uniform(-0.3, 0.3), 0.9, 0) * self.speed
                 self.shot = True
                 self.shooting = False
 
@@ -123,14 +124,24 @@ class LineObstacle(Line):
 
         return point.x >= x_min and point.x <= x_max and point.y >= y_min and point.y <= y_max
 
-    def redirectBall(self, ball, point):
+    def redirectBall(self, ball, point, corner = False):
         ball.collided = True
-        vectorToCorner = point - ball.pos
-        vecLength = vectorToCorner.length()
-        vectorToCorner.normalize()
-        ball.pos = ball.pos - vectorToCorner * (ball.radius - vecLength)
-        ball.motion = self.reflection(ball.motion)
+        vectorToPoint = point - ball.pos
+        vecLength = vectorToPoint.length()
+        vectorToPoint.normalize()
+        ball.pos = ball.pos - vectorToPoint * (ball.radius - vecLength)
+        if corner:
+            ball.motion = self.reflectionFromCorner(ball, point)
+        else:
+            ball.motion = self.reflection(ball.motion)
+            
         return ball
+
+    def reflectionFromCorner(self, ball, point):
+        vectorFromCorner = ball.pos - point
+        vectorFromCorner.normalize()
+        return vectorFromCorner * ball.speed
+    
 
     def collision(self, ball, delta_time):
         distX = self.point_1.x - self.point_2.x
@@ -147,9 +158,9 @@ class LineObstacle(Line):
 
         # Check whether either end of line is inside the ball (check the corners)
         if self.pointInsideCircle(ball, self.point_1):
-            return self.redirectBall(ball, self.point_1)
+            return self.redirectBall(ball, self.point_1, True)
         elif self.pointInsideCircle(ball, self.point_2):
-            return self.redirectBall(ball, self.point_2)
+            return self.redirectBall(ball, self.point_2, True)
         
         # Check if the closest point on the line is already inside the ball
         if self.pointInsideCircle(ball, closestPointOnLine) and self.pointInLineRange(closestPointOnLine):
@@ -187,14 +198,29 @@ class LineObstacle(Line):
                 ball.pos = p_hit + traversal
                 # Change it's motion vector
                 ball.motion = self.reflection(ball.motion)
+        return ball
     
     def reflection(self, c_motion):
         return c_motion - self.normal_vector * (c_motion.dot(self.normal_vector) / (self.normal_vector.dot(self.normal_vector))) * 2
 
-class Platform(Brick):
+class Platform:
     def __init__(self, position):
-        super().__init__(position, 4, 3.26, Color(1.0, 0.0, 0.0))
         self.container = load_obj_file(sys.path[0] + "/models/container/", "Container.obj")
+
+        self.pos = position
+        self.w = 4
+        self.h = 3.26
+        
+        self.corner_1 = Point(self.pos.x - self.w / 2, self.pos.y - self.h /2, 0)
+        self.corner_2 = Point(self.pos.x - self.w / 2, self.pos.y + self.h /2, 0)
+        self.corner_3 = Point(self.pos.x + self.w / 2, self.pos.y + self.h /2, 0)
+        self.corner_4 = Point(self.pos.x + self.w / 2, self.pos.y - self.h /2, 0)
+
+        self.sides = []
+        self.sides.append(LineObstacle(self.corner_1, self.corner_2))
+        self.sides.append(LineObstacle(self.corner_2, self.corner_3))
+        self.sides.append(LineObstacle(self.corner_4, self.corner_3))
+        
     
     def display(self, model_matrix, shader):
         model_matrix.push_matrix()
@@ -213,11 +239,19 @@ class Platform(Brick):
         self.corner_3 = Point(self.pos.x + self.w / 2, self.pos.y + self.h /2, 0)
         self.corner_4 = Point(self.pos.x + self.w / 2, self.pos.y - self.h /2, 0)
 
-        self.sides = []
-        self.sides.append(LineObstacle(self.corner_1, self.corner_2))
-        self.sides.append(LineObstacle(self.corner_2, self.corner_3))
-        self.sides.append(LineObstacle(self.corner_4, self.corner_3))
-        self.sides.append(LineObstacle(self.corner_1, self.corner_4))
+        self.sides[0] = LineObstacle(self.corner_1, self.corner_2)
+        self.sides[1] = LineObstacle(self.corner_2, self.corner_3)
+        self.sides[2] = LineObstacle(self.corner_4, self.corner_3)
+
+    def collision(self, ball, delta_time):
+        for side in self.sides:
+            ball = side.collision(ball, delta_time)
+            if ball.collided:
+                self.collided = True
+                ball.collided = False
+                return ball
+        return ball
+
 
 class Wall(Cube):
     def __init__(self, position, width, height, color):
@@ -259,7 +293,7 @@ class Frame:
 
     def collision(self, ball, delta_time):
         for side in self.sides:
-            side.collision(ball, delta_time)
+            ball = side.collision(ball, delta_time)
             if ball.collided:
                 self.collided = True
                 ball.collided = False
