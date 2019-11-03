@@ -185,7 +185,7 @@ class GraphicsProgram3D:
         self.fr_sum += delta_time
         self.fr_ticker += 1
         if self.fr_sum > 1.0:
-            print(self.fr_ticker / self.fr_sum)
+            # print(self.fr_ticker / self.fr_sum)
             self.fr_sum = 0
             self.fr_ticker = 0
 
