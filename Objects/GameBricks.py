@@ -25,9 +25,13 @@ class HitBrick(Brick):
 
     def display(self, model_matrix, shader):
         if self.currentHits != 0:
+            if self.currentHits > 3:
+                index = 2
+            else:
+                index = self.currentHits - 1
             shader.set_using_tex(1.0)
             glActiveTexture(GL_TEXTURE0)
-            glBindTexture(GL_TEXTURE_2D, self.textures[self.currentHits - 1])
+            glBindTexture(GL_TEXTURE_2D, self.textures[index])
             shader.set_dif_tex(0)
 
         super().display(model_matrix, shader)

@@ -2,8 +2,8 @@ from Objects.Base3DObjects import *
 
 class Intro():
     def __init__(self):
-        self.animationEnd = 20
-        self.animationTime = 0
+        self.animationEnd = 5.0
+        self.animationTime = 0.0
         self.animationFinished = False
 
     def bezierMotionAnimation(self, delta_time, pointArray):
