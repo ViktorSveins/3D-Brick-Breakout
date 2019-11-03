@@ -6,7 +6,7 @@ class Brick(Cube):
         self.pos = position
         self.w = width
         self.h = height
-        self.l = 5
+        self.l = 1
         self.color = color
         self.collided = False
 
