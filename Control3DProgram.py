@@ -36,7 +36,7 @@ class GraphicsProgram3D:
         self.model_matrix = ModelMatrix()
 
         self.view_matrix = ViewMatrix()
-        self.view_matrix.look(Point(0.0, 0.0, 3), Point(0.0, 0.0, 0), Vector(0, 1, 0))
+        self.view_matrix.look(Point(0.0, 4.0, 30), Point(0.0, 11.0, 0), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
 
         self.projection_matrix = ProjectionMatrix()
@@ -70,48 +70,50 @@ class GraphicsProgram3D:
         self.texture_galaxy = load_texture("/skydome.jpeg")
         
         global level
-        level += 1
+        level += 3
         self.brickArray = []
-        y_coord = 11
+        self.brickAnimation = []
+        self.animationDir = 1
+        y_coord = 22
         for _ in range(level):
             for i in range(4):
-                brick = ThreeHitBrick(Point(i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+                brick = ThreeHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
-        y_coord -= 0.75
+        y_coord -= 1.0
 
         for _ in range(level):       
             for i in range(4):
-                brick = TwoHitBrick(Point(i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+                brick = TwoHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
-        y_coord -= 0.75
+        y_coord -= 1.0
         
         for _ in range (level):
             for i in range(4):
-                brick = OneHitBrick(Point(i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+                brick = OneHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
-        y_coord -= 0.75
+        y_coord -= 1.0
 
-        y_coord = 11
+        y_coord = 22
         for _ in range(level):
-            for i in range(1, 5):
-                brick = ThreeHitBrick(Point(-i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+            for i in range(4):
+                brick = ThreeHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
-        y_coord -= 0.75
+        y_coord -= 1.0
 
         for _ in range(level):       
-            for i in range(1, 5):
-                brick = TwoHitBrick(Point(-i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+            for i in range(4):
+                brick = TwoHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
-        y_coord -= 0.75
+        y_coord -= 1.0
         
         for _ in range (level):
-            for i in range(1, 5):
-                brick = OneHitBrick(Point(-i * 3, y_coord, 0), 2.5, 0.5, self.textures)
+            for i in range(4):
+                brick = OneHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
 
@@ -119,7 +121,7 @@ class GraphicsProgram3D:
         # self.brickArray.append(self.brick3)
         self.ballArray = []
         self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
-        self.ball.motion = Vector(-1.5, 1.0, 0)
+        self.ball.motion = Vector(-1.5, 0.9, 0)
 
         self.ball2 = Ball(Point(19.0, 4, 0.0), 0.5)
         self.ball2.motion = Vector(-1.5, 1.7, 0)
@@ -167,6 +169,10 @@ class GraphicsProgram3D:
 
         self.angle += pi * delta_time
         # #     angle -= (2 * pi)
+
+        # for brick in self.brickAnimation:
+        #     brick.updateAnimation(delta_time)
+        #     if
         
         for ball in self.ballArray:
             ball.update(delta_time)
@@ -176,8 +182,13 @@ class GraphicsProgram3D:
             for i in range(len(self.ballArray)):
                 self.ballArray[i] = brick.collision(self.ballArray[i], delta_time)
                 brick.update()
-            if not brick.destroy:
+            if brick.destroy:
+                self.animationDir *= -1
+                brick.animationDirection = self.animationDir
+                self.brickAnimation.append(brick)
+            else:
                 tmpList.append(brick)
+
         self.brickArray = tmpList
 
         if self.UP_key_down:
@@ -292,17 +303,17 @@ class GraphicsProgram3D:
             brick.display(self.model_matrix, self.shader)
 
         ####################
-        for i in range(8):
-            self.model_matrix.push_matrix()
-            self.model_matrix.add_rotate_x(self.angle * 0.74324 + i * pi / 4.0)
-            self.model_matrix.add_translation(0.0, 5.0, 10.0)
-            self.model_matrix.add_rotate_x(-(self.angle * 0.74324 + i * pi / 4.0))
-            self.model_matrix.add_scale(3.0, 3.0, 3.0)
-            self.shader.set_model_matrix(self.model_matrix.matrix)
+        # for i in range(8):
+        #     self.model_matrix.push_matrix()
+        #     self.model_matrix.add_rotate_x(self.angle * 0.74324 + i * pi / 4.0)
+        #     self.model_matrix.add_translation(0.0, 5.0, 10.0)
+        #     self.model_matrix.add_rotate_x(-(self.angle * 0.74324 + i * pi / 4.0))
+        #     self.model_matrix.add_scale(3.0, 3.0, 3.0)
+        #     self.shader.set_model_matrix(self.model_matrix.matrix)
 
-            self.shader.set_material_diffuse(Color(1.0, 1.0, 1.0))
-            self.sphere.draw(self.shader)
-            self.model_matrix.pop_matrix()
+        #     self.shader.set_material_diffuse(Color(1.0, 1.0, 1.0))
+        #     self.sphere.draw(self.shader)
+        #     self.model_matrix.pop_matrix()
         ####################
 
         ##### Adding to sprite shader how to draw with alpha image #####

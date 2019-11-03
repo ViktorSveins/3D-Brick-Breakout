@@ -8,6 +8,8 @@ class HitBrick(Brick):
         self.currentHits = 0
         self.textures = textures
         self.destroy = False
+        self.animationStart = 4
+        self.animationDirection = 0
 
     def update(self):
         if self.collided:
@@ -15,6 +17,9 @@ class HitBrick(Brick):
             self.currentHits += 1
             if self.currentHits >= self.maxHit:
                 self.destroy = True
+
+    def updateAnimation(self, delta_time):
+        self.pos.z += 0.1 * self.animationDirection * delta_time
 
     def display(self, model_matrix, shader):
         if self.currentHits != 0:
