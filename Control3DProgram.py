@@ -50,6 +50,7 @@ class GraphicsProgram3D:
 
         self.LEFT_key_down = False
         self.RIGHT_key_down = False
+        self.SPACE_key_down = False
         self.pause_game = False
 
         self.texture_id01 = load_texture("/crack1.png")
@@ -63,7 +64,7 @@ class GraphicsProgram3D:
         self.brickArray = []
         self.brickAnimation = []
         self.animationDir = 1
-        y_coord = 22
+        y_coord = 20
         for _ in range(level):
             for i in range(4):
                 brick = ThreeHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.textures)
@@ -85,7 +86,7 @@ class GraphicsProgram3D:
             y_coord -= 0.75
         y_coord -= 1.0
 
-        y_coord = 22
+        y_coord = 20
         for _ in range(level):
             for i in range(4):
                 brick = ThreeHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.textures)
@@ -109,24 +110,29 @@ class GraphicsProgram3D:
         # self.brick3 = TwoHitBrick(Point(0, 7, 0), 3.5, 0.5, self.textures)
         # self.brickArray.append(self.brick3)
         self.ballArray = []
-        self.ball = Ball(Point(18.0, 5, 0.0), 0.5)
-        self.ball.motion = Vector(-1.5, 1.7, 0)
+        # self.ball = Ball(Point(12.0, 5, 0.0), 0.5)
+        # self.ball.motion = Vector(-1.5, 1.7, 0)
 
-        self.ball2 = Ball(Point(19.0, 4, 0.0), 0.5)
-        self.ball2.motion = Vector(-1.5, 1.7, 0)
+        # self.ball2 = Ball(Point(-4.0, 4, 0.0), 0.5)
+        # self.ball2.motion = Vector(-1.5, 1.7, 0)
 
-        self.ball3 = Ball(Point(20.0, 3, 0.0), 0.5)
-        self.ball3.motion = Vector(-1.5, 1.7, 0)
+        # self.ball3 = Ball(Point(9, 3, 0.0), 0.5)
+        # self.ball3.motion = Vector(-1.5, 1.7, 0)
 
-        self.ball4 = Ball(Point(21.0, 2, 0.0), 0.5)
-        self.ball4.motion = Vector(-1.5, 1.7, 0)
+        # self.ball4 = Ball(Point(0, 2, 0.0), 0.5)
+        # self.ball4.motion = Vector(-1.5, 1.7, 0)
         
-        self.ballArray.append(self.ball)
-        self.ballArray.append(self.ball2)
-        self.ballArray.append(self.ball3)
-        self.ballArray.append(self.ball4)
+        # self.ballArray.append(self.ball2)
+        # self.ballArray.append(self.ball3)
+        # self.ballArray.append(self.ball4)
+
+
         self.skydome = Skysphere()
         self.platform = Platform(Point(0, 0, 0))
+        self.frame = Frame(self.platform.pos, 25, 21)
+
+        self.ball = Ball(Point(self.platform.pos.x, self.platform.pos.y + self.platform.h / 2 + 0.5, 0), 0.5)
+        self.ballArray.append(self.ball)
 
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/", "metallic_sphere.obj")
@@ -193,7 +199,7 @@ class GraphicsProgram3D:
         self.brickAnimation = tmpAnimList
         
         for ball in self.ballArray:
-            ball.update(delta_time)
+            ball.update(self.platform.pos, delta_time)
 
         tmpList = []
         for brick in self.brickArray:
@@ -211,17 +217,17 @@ class GraphicsProgram3D:
 
         for i in range(len(self.ballArray)):
             self.ballArray[i] = self.platform.collision(self.ballArray[i], delta_time)
+            self.ballArray[i] = self.frame.collision(self.ballArray[i], delta_time)
 
         if self.LEFT_key_down:
             self.platform.slide(-3 * delta_time)
             self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0), 15)
-            # self.view_matrix.slide(-3 * delta_time, 0, 0 )
-            # self.view_matrix.yaw(-(pi / 2) * delta_time)
         if self.RIGHT_key_down:
             self.platform.slide(3 * delta_time)
             self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0), 15)
-            # self.view_matrix.slide(3 * delta_time, 0, 0)
-            # self.view_matrix.yaw((pi / 2) * delta_time)
+        if self.SPACE_key_down:
+            self.ball.shooting = True
+            
         
 
     def display(self):
@@ -283,7 +289,7 @@ class GraphicsProgram3D:
         self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_material_shininess(5.0)
         
-
+        self.frame.display(self.model_matrix, self.shader)
         self.platform.display(self.model_matrix, self.shader)
         # self.model_matrix.push_matrix()
         # self.model_matrix.add_translation(0.014, 0, 0)
@@ -373,7 +379,8 @@ class GraphicsProgram3D:
                         self.LEFT_key_down = True
                     if event.key == K_RIGHT:
                         self.RIGHT_key_down = True
-
+                    if event.key == K_SPACE:
+                        self.SPACE_key_down = True
                     if event.key == K_p:
                         self.pause_game = not self.pause_game
                         
@@ -382,6 +389,8 @@ class GraphicsProgram3D:
                         self.LEFT_key_down = False
                     if event.key == K_RIGHT:
                         self.RIGHT_key_down = False
+                    if event.key == K_SPACE:
+                        self.SPACE_key_down = False
 
             self.update()
             self.display()
