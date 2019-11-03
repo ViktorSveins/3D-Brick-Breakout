@@ -149,7 +149,7 @@ class GraphicsProgram3D:
                 self.setRestart = False
                 self.restartBezierMovement = []
                 self.restartPlatformMovement= []
-                # TODO Endurstilla boltann hér
+                self.ball.reset()
         
         if self.lost:
             if not self.restartlevel.animationFinished:
@@ -169,16 +169,13 @@ class GraphicsProgram3D:
         if self.ball.pos.y <= 0:
             self.lives -= 1
             if self.lives > 0:
-                self.ball.shot = False
-                self.ball.shooting = False
-                self.ball.motion = Vector(0,0,0)
-                self.ball.pos = Point(self.platform.pos.x, self.platform.pos.y + self.platform.h / 2 + 0.5, 0)
+                self.ball.reset()
             else:
                 self.lost = True
                 self.stageDrawn = False
                 global level
                 level = 1
-                # TODO Þarf líka að endurstilla boltann hér
+                self.ball.reset()
 
         if len(self.brickArray) == 0:
             self.win = True

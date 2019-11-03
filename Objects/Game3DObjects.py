@@ -78,6 +78,12 @@ class Ball(Sphere):
         self.collided = False
         self.speed = 10
 
+    def reset(self):
+        self.shot = False
+        self.shooting = False
+        self.motion = Vector(0,0,0)
+        self.pos = Point(self.platform.pos.x, self.platform.pos.y + self.platform.h / 2 + 0.5, 0)
+
     def display(self, model_matrix, shader):
         model_matrix.push_matrix()
         shader.set_using_tex(1.0)
