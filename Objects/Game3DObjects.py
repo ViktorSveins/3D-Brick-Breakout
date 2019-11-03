@@ -56,7 +56,7 @@ class Brick(Cube):
         
         # Check the sides in the order defined above
         for side in sidesToCheck:
-            side.collision(ball, delta_time)
+            ball = side.collision(ball, delta_time)
             if ball.collided:
                 self.collided = True
                 ball.collided = False
@@ -187,14 +187,29 @@ class LineObstacle(Line):
                 ball.pos = p_hit + traversal
                 # Change it's motion vector
                 ball.motion = self.reflection(ball.motion)
+        return ball
     
     def reflection(self, c_motion):
         return c_motion - self.normal_vector * (c_motion.dot(self.normal_vector) / (self.normal_vector.dot(self.normal_vector))) * 2
 
-class Platform(Brick):
+class Platform:
     def __init__(self, position):
-        super().__init__(position, 4, 3.26, Color(1.0, 0.0, 0.0))
         self.container = load_obj_file(sys.path[0] + "/models/container/", "Container.obj")
+
+        self.pos = position
+        self.w = 4
+        self.h = 3.26
+        
+        self.corner_1 = Point(self.pos.x - self.w / 2, self.pos.y - self.h /2, 0)
+        self.corner_2 = Point(self.pos.x - self.w / 2, self.pos.y + self.h /2, 0)
+        self.corner_3 = Point(self.pos.x + self.w / 2, self.pos.y + self.h /2, 0)
+        self.corner_4 = Point(self.pos.x + self.w / 2, self.pos.y - self.h /2, 0)
+
+        self.sides = []
+        self.sides.append(LineObstacle(self.corner_1, self.corner_2))
+        self.sides.append(LineObstacle(self.corner_2, self.corner_3))
+        self.sides.append(LineObstacle(self.corner_4, self.corner_3))
+        
     
     def display(self, model_matrix, shader):
         model_matrix.push_matrix()
@@ -213,11 +228,19 @@ class Platform(Brick):
         self.corner_3 = Point(self.pos.x + self.w / 2, self.pos.y + self.h /2, 0)
         self.corner_4 = Point(self.pos.x + self.w / 2, self.pos.y - self.h /2, 0)
 
-        self.sides = []
-        self.sides.append(LineObstacle(self.corner_1, self.corner_2))
-        self.sides.append(LineObstacle(self.corner_2, self.corner_3))
-        self.sides.append(LineObstacle(self.corner_4, self.corner_3))
-        self.sides.append(LineObstacle(self.corner_1, self.corner_4))
+        self.sides[0] = LineObstacle(self.corner_1, self.corner_2)
+        self.sides[1] = LineObstacle(self.corner_2, self.corner_3)
+        self.sides[2] = LineObstacle(self.corner_4, self.corner_3)
+
+    def collision(self, ball, delta_time):
+        for side in self.sides:
+            ball = side.collision(ball, delta_time)
+            if ball.collided:
+                self.collided = True
+                ball.collided = False
+                return ball
+        return ball
+
 
 class Wall(Cube):
     def __init__(self, position, width, height, color):
@@ -259,7 +282,7 @@ class Frame:
 
     def collision(self, ball, delta_time):
         for side in self.sides:
-            side.collision(ball, delta_time)
+            ball = side.collision(ball, delta_time)
             if ball.collided:
                 self.collided = True
                 ball.collided = False
