@@ -52,12 +52,15 @@ class GraphicsProgram3D:
         self.RIGHT_key_down = False
         self.SPACE_key_down = False
         self.pause_game = False
+        
+        self.meshmodel_container = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/container/", "Container.obj")
 
-        self.texture_id01 = load_texture("/crack1.png")
-        self.texture_id02 = load_texture("/crack2.png")
-        self.texture_id03 = load_texture("/crack3.png")
-        self.textures = [self.texture_id01, self.texture_id02, self.texture_id03]
+        self.texture_crack01 = load_texture("/crack1.png")
+        self.texture_crack02 = load_texture("/crack2.png")
+        self.texture_crack03 = load_texture("/crack3.png")
+        self.texture_eye = load_texture("/eye.jpg")
         self.texture_galaxy = load_texture("/skydome.jpeg")
+        self.crack_textures = [self.texture_crack01, self.texture_crack02, self.texture_crack03]
         
         global level
         level += 3
@@ -67,21 +70,21 @@ class GraphicsProgram3D:
         y_coord = 20
         for _ in range(level):
             for i in range(4):
-                brick = ThreeHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                brick = ThreeHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
         y_coord -= 1.0
 
         for _ in range(level):       
             for i in range(4):
-                brick = TwoHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                brick = TwoHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
         y_coord -= 1.0
         
         for _ in range (level):
             for i in range(4):
-                brick = OneHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                brick = OneHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
         y_coord -= 1.0
@@ -89,25 +92,25 @@ class GraphicsProgram3D:
         y_coord = 20
         for _ in range(level):
             for i in range(4):
-                brick = ThreeHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                brick = ThreeHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
         y_coord -= 1.0
 
         for _ in range(level):       
             for i in range(4):
-                brick = TwoHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                brick = TwoHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
         y_coord -= 1.0
         
         for _ in range (level):
             for i in range(4):
-                brick = OneHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                brick = OneHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
                 self.brickArray.append(brick)
             y_coord -= 0.75
 
-        # self.brick3 = TwoHitBrick(Point(0, 7, 0), 3.5, 0.5, self.textures)
+        # self.brick3 = TwoHitBrick(Point(0, 7, 0), 3.5, 0.5, self.crack_textures)
         # self.brickArray.append(self.brick3)
         self.ballArray = []
         # self.ball = Ball(Point(12.0, 5, 0.0), 0.5)
@@ -128,10 +131,10 @@ class GraphicsProgram3D:
 
 
         self.skydome = Skysphere()
-        self.platform = Platform(Point(0, 0, 0))
+        self.platform = Platform(Point(0, 0, 0), self.meshmodel_container)
         self.frame = Frame(self.platform.pos, 25, 21)
 
-        self.ball = Ball(Point(self.platform.pos.x, self.platform.pos.y + self.platform.h / 2 + 0.5, 0), 0.5)
+        self.ball = Ball(Point(self.platform.pos.x, self.platform.pos.y + self.platform.h / 2 + 0.5, 0), 0.5, self.texture_eye)
         self.ballArray.append(self.ball)
 
         # self.obj_model = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/obj/", "eyeball.obj")
@@ -306,7 +309,7 @@ class GraphicsProgram3D:
 
         self.shader.set_using_tex(1.0)        
         glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.texture_id01)
+        glBindTexture(GL_TEXTURE_2D, self.texture_crack01)
         self.shader.set_dif_tex(0)
         for ball in self.ballArray:
             ball.display(self.model_matrix, self.shader)

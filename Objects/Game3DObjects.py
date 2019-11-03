@@ -65,11 +65,11 @@ class Brick(Cube):
         
 
 class Ball(Sphere):
-    def __init__(self, position, size, color=Color(1.0, 0.874, 0.0)):
+    def __init__(self, position, size, texture):
         super().__init__(12, 24)
         self.pos = position
         self.size = size
-        self.color = color
+        self.texture = texture
         self.shininess = 50.0
         self.radius = (self.size + 0.5) / 2
         self.shooting = False
@@ -79,12 +79,15 @@ class Ball(Sphere):
         self.speed = 10
 
     def display(self, model_matrix, shader):
-        shader.set_material_diffuse(self.color)
         model_matrix.push_matrix()
+        shader.set_using_tex(1.0)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.texture)
         model_matrix.add_translation(self.pos.x, self.pos.y, self.pos.z)
         model_matrix.add_scale(self.size, self.size, self.size)
         shader.set_model_matrix(model_matrix.matrix)
         self.draw(shader)
+        shader.set_dif_tex(0)
         model_matrix.pop_matrix()
 
     def update(self, platform_position, delta_time):
@@ -204,8 +207,8 @@ class LineObstacle(Line):
         return c_motion - self.normal_vector * (c_motion.dot(self.normal_vector) / (self.normal_vector.dot(self.normal_vector))) * 2
 
 class Platform:
-    def __init__(self, position):
-        self.container = load_obj_file(sys.path[0] + "/models/container/", "Container.obj")
+    def __init__(self, position, meshmodel):
+        self.container = meshmodel
 
         self.pos = position
         self.w = 4
