@@ -76,6 +76,7 @@ class Ball(Sphere):
         self.shot = False
         self.motion = Vector(0,0,0)
         self.collided = False
+        self.speed = 10
 
     def display(self, model_matrix, shader):
         shader.set_material_diffuse(self.color)
@@ -92,7 +93,7 @@ class Ball(Sphere):
         else:
             self.pos.x = platform_position.x
             if self.shooting:
-                self.motion = Vector(random.uniform(-3, 3), 9, 0)
+                self.motion = Vector(random.uniform(-0.3, 0.3), 0.9, 0) * self.speed
                 self.shot = True
                 self.shooting = False
 
@@ -123,14 +124,24 @@ class LineObstacle(Line):
 
         return point.x >= x_min and point.x <= x_max and point.y >= y_min and point.y <= y_max
 
-    def redirectBall(self, ball, point):
+    def redirectBall(self, ball, point, corner = False):
         ball.collided = True
-        vectorToCorner = point - ball.pos
-        vecLength = vectorToCorner.length()
-        vectorToCorner.normalize()
-        ball.pos = ball.pos - vectorToCorner * (ball.radius - vecLength)
-        ball.motion = self.reflection(ball.motion)
+        vectorToPoint = point - ball.pos
+        vecLength = vectorToPoint.length()
+        vectorToPoint.normalize()
+        ball.pos = ball.pos - vectorToPoint * (ball.radius - vecLength)
+        if corner:
+            ball.motion = self.reflectionFromCorner(ball, point)
+        else:
+            ball.motion = self.reflection(ball.motion)
+            
         return ball
+
+    def reflectionFromCorner(self, ball, point):
+        vectorFromCorner = ball.pos - point
+        vectorFromCorner.normalize()
+        return vectorFromCorner * ball.speed
+    
 
     def collision(self, ball, delta_time):
         distX = self.point_1.x - self.point_2.x
@@ -147,9 +158,9 @@ class LineObstacle(Line):
 
         # Check whether either end of line is inside the ball (check the corners)
         if self.pointInsideCircle(ball, self.point_1):
-            return self.redirectBall(ball, self.point_1)
+            return self.redirectBall(ball, self.point_1, True)
         elif self.pointInsideCircle(ball, self.point_2):
-            return self.redirectBall(ball, self.point_2)
+            return self.redirectBall(ball, self.point_2, True)
         
         # Check if the closest point on the line is already inside the ball
         if self.pointInsideCircle(ball, closestPointOnLine) and self.pointInLineRange(closestPointOnLine):
