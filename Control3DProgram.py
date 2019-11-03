@@ -63,72 +63,13 @@ class GraphicsProgram3D:
         self.crack_textures = [self.texture_crack01, self.texture_crack02, self.texture_crack03]
         
         global level
-        level += 3
+        level += 1
         self.brickArray = []
         self.brickAnimation = []
         self.animationDir = 1
-        y_coord = 20
-        for _ in range(level):
-            for i in range(4):
-                brick = ThreeHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
-                self.brickArray.append(brick)
-            y_coord -= 0.75
-        y_coord -= 1.0
+        self.remakeStage()
 
-        for _ in range(level):       
-            for i in range(4):
-                brick = TwoHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
-                self.brickArray.append(brick)
-            y_coord -= 0.75
-        y_coord -= 1.0
-        
-        for _ in range (level):
-            for i in range(4):
-                brick = OneHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
-                self.brickArray.append(brick)
-            y_coord -= 0.75
-        y_coord -= 1.0
-
-        y_coord = 20
-        for _ in range(level):
-            for i in range(4):
-                brick = ThreeHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
-                self.brickArray.append(brick)
-            y_coord -= 0.75
-        y_coord -= 1.0
-
-        for _ in range(level):       
-            for i in range(4):
-                brick = TwoHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
-                self.brickArray.append(brick)
-            y_coord -= 0.75
-        y_coord -= 1.0
-        
-        for _ in range (level):
-            for i in range(4):
-                brick = OneHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.crack_textures)
-                self.brickArray.append(brick)
-            y_coord -= 0.75
-
-        # self.brick3 = TwoHitBrick(Point(0, 7, 0), 3.5, 0.5, self.crack_textures)
-        # self.brickArray.append(self.brick3)
         self.ballArray = []
-        # self.ball = Ball(Point(12.0, 5, 0.0), 0.5)
-        # self.ball.motion = Vector(-1.5, 1.7, 0)
-
-        # self.ball2 = Ball(Point(-4.0, 4, 0.0), 0.5)
-        # self.ball2.motion = Vector(-1.5, 1.7, 0)
-
-        # self.ball3 = Ball(Point(9, 3, 0.0), 0.5)
-        # self.ball3.motion = Vector(-1.5, 1.7, 0)
-
-        # self.ball4 = Ball(Point(0, 2, 0.0), 0.5)
-        # self.ball4.motion = Vector(-1.5, 1.7, 0)
-        
-        # self.ballArray.append(self.ball2)
-        # self.ballArray.append(self.ball3)
-        # self.ballArray.append(self.ball4)
-
 
         self.skydome = Skysphere()
         self.platform = Platform(Point(0, 0, 0), self.meshmodel_container)
@@ -156,7 +97,22 @@ class GraphicsProgram3D:
                                 Point(0.0, 0.0, 0), Point(0.0, 0.0, 0), Point(0.0, 0.0, 0), Point(0.0, 0.0, 0), Point(0.0, 0.0, 0),
                                 Point(0.0, 11.0, 0), Point(0.0, 11.0, 0)]
         self.lightPos = self.view_matrix.eye
-        
+
+        # Restart level
+        self.restartBezierBase = [Point(0.0, 4.0, 30.0), Point(5.0, 100.0, 30.0), Point(5.0, 100.0, -100.0),
+                                Point(-5.0, -100.0, -100.0), Point(-5.0, -50.0, 100.0), Point(0.0, 4.0, 30.0)]
+        self.restartlevel = Motion(10.0)
+        self.restartBezierMovement = []
+        self.restartPlatform = Motion(10.0)
+        self.restartPlatformBase= Point(0.0, 0.0, 0.0)
+        self.restartPlatformMovement= []
+        self.setRestart = False
+        self.stageDrawn = False
+
+        self.win = False
+        self.lost = False
+        self.lives = 3
+
         # Spotlight
         self.lightMotion = Motion(10.0)
         self.lightMotionArray = [Point(100.0, -100.0, 75), Point(100.0, 100.0, 75), Point(-100.0, 100.0, 75), Point(-100.0, -100.0, 75), Point(100.0, -100.0, 75)]
@@ -178,6 +134,57 @@ class GraphicsProgram3D:
             self.view_matrix.look(self.intro.bezierMotionAnimation(delta_time, self.bezierPositions), self.introLook.bezierMotionAnimation(delta_time, self.bezierLookPosit), Vector(0, 1, 0))
             self.lightPos = self.view_matrix.eye
             return
+
+        if self.win:
+            if not self.restartlevel.animationFinished:
+                if self.view_matrix.eye.z <= 0 and not self.stageDrawn:
+                    self.brickArray = []
+                    self.remakeStage()
+                self.restartAnimation(delta_time)
+                return
+            else:
+                self.win = False
+                self.restartlevel.animationFinished = False
+                self.restartlevel.animationTime = 0.0
+                self.setRestart = False
+                self.restartBezierMovement = []
+                self.restartPlatformMovement= []
+                # TODO Endurstilla boltann hér
+        
+        if self.lost:
+            if not self.restartlevel.animationFinished:
+                if self.view_matrix.eye.z <= 0 and not self.stageDrawn:
+                    self.brickArray = []
+                    self.remakeStage()
+                self.restartAnimation(delta_time)
+                return
+            else:
+                self.lost = False
+                self.restartlevel.animationFinished = False
+                self.restartlevel.animationTime = 0.0
+                self.setRestart = False
+                self.restartBezierMovement = []
+                self.restartPlatformMovement= []
+        
+        if self.ball.pos.y <= 0:
+            self.lives -= 1
+            if self.lives > 0:
+                self.ball.shot = False
+                self.ball.shooting = False
+                self.ball.motion = Vector(0,0,0)
+                self.ball.pos = Point(self.platform.pos.x, self.platform.pos.y + self.platform.h / 2 + 0.5, 0)
+            else:
+                self.lost = True
+                self.stageDrawn = False
+                global level
+                level = 1
+                # TODO Þarf líka að endurstilla boltann hér
+
+        if len(self.brickArray) == 0:
+            self.win = True
+            self.stageDrawn = False
+            if level < 3:
+                level += 1
         
         self.spotlightPos = self.lightMotion.bezierMotionAnimation(delta_time, self.lightMotionArray)
         if self.lightMotion.animationFinished:
@@ -223,10 +230,10 @@ class GraphicsProgram3D:
             self.ballArray[i] = self.frame.collision(self.ballArray[i], delta_time)
 
         if self.LEFT_key_down:
-            self.platform.slide(-3 * delta_time)
+            self.platform.slide(-5 * delta_time)
             self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0), 15)
         if self.RIGHT_key_down:
-            self.platform.slide(3 * delta_time)
+            self.platform.slide(5 * delta_time)
             self.view_matrix.arcFollow(self.platform.pos.x, 30, Point(0, 11, 0), 15)
         if self.SPACE_key_down:
             self.ball.shooting = True
@@ -400,6 +407,66 @@ class GraphicsProgram3D:
 
         #OUT OF GAME LOOP
         pygame.quit()
+
+    def restartAnimation(self, delta_time):
+        if not self.setRestart:
+            self.restartBezierMovement.append(self.view_matrix.eye)
+            for point in self.restartBezierBase:
+                self.restartBezierMovement.append(point)
+
+            self.restartPlatformMovement.append(self.platform.pos)
+            self.restartPlatformMovement.append(self.restartPlatformBase)
+
+            self.setRestart = True
+
+        self.view_matrix.look(self.restartlevel.bezierMotionAnimation(delta_time, self.restartBezierMovement), Point(0.0, 11.0, 0), Vector(0, 1, 0))
+        self.platform.pos = self.restartPlatform.bezierMotionAnimation(delta_time, self.restartPlatformMovement)
+
+    def remakeStage(self):
+        y_coord = 20
+        for _ in range(level):
+            for i in range(4):
+                brick = ThreeHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+        y_coord -= 1.0
+
+        for _ in range(level):       
+            for i in range(4):
+                brick = TwoHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+        y_coord -= 1.0
+        
+        for _ in range (level):
+            for i in range(4):
+                brick = OneHitBrick(Point((i * 3) + 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+        y_coord -= 1.0
+
+        y_coord = 20
+        for _ in range(level):
+            for i in range(4):
+                brick = ThreeHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+        y_coord -= 1.0
+
+        for _ in range(level):       
+            for i in range(4):
+                brick = TwoHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+        y_coord -= 1.0
+        
+        for _ in range (level):
+            for i in range(4):
+                brick = OneHitBrick(Point((-i * 3) - 1.5, y_coord, 0), 2.5, 0.5, self.textures)
+                self.brickArray.append(brick)
+            y_coord -= 0.75
+
+        self.stageDrawn = True
 
     def start(self):
         self.program_loop()
