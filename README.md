@@ -1,6 +1,8 @@
 # 3D-Brick-Breakout
 ### 3D Brick Breakout game using the OpenGL pipeline in python with an interesting camera mechanism
-#### Steer the platform with *Left/Right Arrow Keys*, launch ball from platform by pressing *Space*
+#### Steer the platform: *Left/Right Arrow Keys*
+#### Launch ball from platform: *Space*
+#### Pause game: *P*
 
 Requirements:
 
