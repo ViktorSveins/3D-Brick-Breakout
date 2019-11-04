@@ -29,7 +29,7 @@ class GraphicsProgram3D:
         pygame.init() 
         pygame.display.set_mode((800,600), pygame.OPENGL|pygame.DOUBLEBUF)
 
-        # Used for the skydome, can be used for particle effects as well, works well with textures and alpha textures
+        # Used for the skydome, can be used for particle effects as well, works well with textures with alpha textures
         self.sprite_shader = SpriteShader()
         self.sprite_shader.use()
 
