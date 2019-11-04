@@ -4,6 +4,7 @@ import sys
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+# Loads in the textures give, used fo cleaner code in the main program
 def load_texture(path_string):
         surface = pygame.image.load(sys.path[0] + "/Textures/" + path_string)
         tex_string = pygame.image.tostring(surface, "RGBA", 1)

@@ -35,6 +35,7 @@ void main(void)
     v_s = normalize(u_light_position - position);
 	v_h = normalize(v_s + v);
 
+	// Get spotlight s and h vectors (normalized)
 	v_s_spotlight = normalize(u_spotlight_position - position);
 	v_h_spotlight = normalize(v_s_spotlight + v);
 	// eye coords

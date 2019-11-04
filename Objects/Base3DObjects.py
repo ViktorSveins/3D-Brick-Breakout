@@ -28,6 +28,8 @@ class Point:
         
     def __mul__(self, other):
         return Point(self.x * other, self.y * other, self.z * other)
+
+# Base line, used to draw other objects
 class Line:
     def __init__(self, point_1, point_2):
         self.point_1 = point_1
@@ -125,7 +127,7 @@ class MeshModel:
             glBindBuffer(GL_ARRAY_BUFFER, 0)
             shader.set_using_tex(0.0)
 
-
+# Cube with vertex array, loaded in the GL array buffer, this is used in all brick shaped objects in the game
 class Cube:
     def __init__(self):
         vertex_array = [
@@ -175,6 +177,7 @@ class Cube:
         glDrawArrays(GL_TRIANGLE_STRIP, 20, 4)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
 
+# Creates a spherical object, vertex array loaded in the GL array buffer
 class Sphere:
     def __init__(self, stacks = 12, slices = 24):
         vertex_array = []

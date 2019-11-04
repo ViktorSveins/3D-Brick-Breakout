@@ -42,7 +42,7 @@ class Skysphere:
             glDrawArrays(GL_TRIANGLE_STRIP, i, (self.slices + 1) * 2)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
 
-
+# Used to create sprites, works well with textures that also have an alpha texture
 class Sprite:
     def __init__(self):
         vertex_array = [-0.5, -0.5, 0.0, 0.0, 0.0,

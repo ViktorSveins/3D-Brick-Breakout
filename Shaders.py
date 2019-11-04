@@ -145,7 +145,10 @@ class Shader3D:
         glUniform4f(self.spotLightSpecLoc, color.r, color.g, color.b, 1.0)
     # Spotlight ends
 
-#############################################################################################################################################
+#################
+# Sprite shader #
+#################
+
 class SpriteShader:
     def __init__(self):
         vert_shader = glCreateShader(GL_VERTEX_SHADER)

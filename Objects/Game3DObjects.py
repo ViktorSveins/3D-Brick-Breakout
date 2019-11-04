@@ -2,6 +2,7 @@ from Objects.Base3DObjects import *
 from ojb_3D_loading import *
 import random 
 
+# Typical brick in the game, inherits the cube class
 class Brick(Cube):
     def __init__(self, position, width, height, color):
         super().__init__()
@@ -63,7 +64,7 @@ class Brick(Cube):
                 return ball
         return ball
         
-
+# Play game ball
 class Ball(Sphere):
     def __init__(self, position, size, texture_diffuse, texture_specular):
         super().__init__(12, 24)
@@ -79,6 +80,7 @@ class Ball(Sphere):
         self.collided = False
         self.speed = 10
 
+    # Resets the ball between stages or losing
     def reset(self, point):
         self.shot = False
         self.shooting = False
@@ -101,6 +103,7 @@ class Ball(Sphere):
         shader.set_using_tex(0.0)
         model_matrix.pop_matrix()
 
+    # Updates the ball with delta time and it's motion, else it makes sure to be stuck on the platform
     def update(self, platform_position, delta_time):
         if self.shot:
             self.pos += self.motion * delta_time
@@ -111,12 +114,13 @@ class Ball(Sphere):
                 self.shot = True
                 self.shooting = False
 
-        
+# Each brick has 4 of these, these handle the collision detection of the ball
 class LineObstacle(Line):
     def __init__(self, point_1, point_2):
         Line.__init__(self, point_1, point_2)
         self.normal_vector = Vector(-(self.point_2.y - self.point_1.y), self.point_2.x - self.point_1.x, 0)
 
+    # Static check that checks if the corner of a lineObstacle is inside the ball
     def pointInsideCircle(self, ball, point):
         distX = ball.pos.x - point.x
         distY = ball.pos.y - point.y
@@ -125,6 +129,7 @@ class LineObstacle(Line):
 
         return length < ball.radius
 
+    # Is the line inside the ball
     def pointInLineRange(self, point):
         if self.point_1.x < self.point_2.x:
                 x_min, x_max = self.point_1.x, self.point_2.x
@@ -138,6 +143,7 @@ class LineObstacle(Line):
 
         return point.x >= x_min and point.x <= x_max and point.y >= y_min and point.y <= y_max
 
+    # Redirects the ball in with the collided objecst normal
     def redirectBall(self, ball, point, corner = False):
         ball.collided = True
         vectorToPoint = point - ball.pos
@@ -151,12 +157,12 @@ class LineObstacle(Line):
             
         return ball
 
+    # Returns the new motion of the ball if collided with the corner
     def reflectionFromCorner(self, ball, point):
         vectorFromCorner = ball.pos - point
         vectorFromCorner.normalize()
         return vectorFromCorner * ball.speed
     
-
     def collision(self, ball, delta_time):
         distX = self.point_1.x - self.point_2.x
         distY = self.point_1.y - self.point_2.y
@@ -214,9 +220,11 @@ class LineObstacle(Line):
                 ball.motion = self.reflection(ball.motion)
         return ball
     
+    # Returns the new motion of the ball if collided with the line
     def reflection(self, c_motion):
         return c_motion - self.normal_vector * (c_motion.dot(self.normal_vector) / (self.normal_vector.dot(self.normal_vector))) * 2
 
+# Represents the platform on the bottom of the game
 class Platform:
     def __init__(self, position, meshmodel):
         self.container = meshmodel
@@ -245,6 +253,7 @@ class Platform:
         self.container.draw(shader)
         model_matrix.pop_matrix()
 
+    # Moves the platform from left to right
     def slide(self, x, frameWidth):
         xMax = frameWidth / 2 - self.w / 2 
     
@@ -262,6 +271,7 @@ class Platform:
         self.sides[1] = LineObstacle(self.corner_2, self.corner_3)
         self.sides[2] = LineObstacle(self.corner_4, self.corner_3)
 
+    # Collision detection for the ball on the platform
     def collision(self, ball, delta_time):
         for side in self.sides:
             ball = side.collision(ball, delta_time)
@@ -271,7 +281,7 @@ class Platform:
                 return ball
         return ball
 
-
+# Represents one wall
 class Wall(Cube):
     def __init__(self, position, width, height, color):
         super().__init__()
@@ -290,7 +300,7 @@ class Wall(Cube):
         self.draw(shader)
         model_matrix.pop_matrix()
     
-
+# Uese walls to draw thte frame, but uses lineObstacle class for collision detection
 class Frame:
     def __init__(self, platform_position, width, height):
         self.w = width
