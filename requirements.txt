@@ -1,0 +1,4 @@
+# Pip requirements
+pygame
+pyopengl
+numpy
