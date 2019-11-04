@@ -29,9 +29,11 @@ class GraphicsProgram3D:
         pygame.init() 
         pygame.display.set_mode((800,600), pygame.OPENGL|pygame.DOUBLEBUF)
 
+        # Used for the skydome, can be used for particle effects as well, works well with textures and alpha textures
         self.sprite_shader = SpriteShader()
         self.sprite_shader.use()
 
+        # Main shader
         self.shader = Shader3D()
         self.shader.use()
 
@@ -49,8 +51,10 @@ class GraphicsProgram3D:
         self.SPACE_key_down = False
         self.pause_game = False
         
+        # Load up that beautiful container
         self.meshmodel_container = ojb_3D_loading.load_obj_file(sys.path[0] + "/models/container/", "Container.obj")
 
+        # Textures
         self.texture_crack01 = load_texture("/crack1.png")
         self.texture_crack02 = load_texture("/crack2.png")
         self.texture_crack03 = load_texture("/crack3.png")
@@ -62,40 +66,37 @@ class GraphicsProgram3D:
         self.clock = pygame.time.Clock()
         self.clock.tick()
         
+        # Level used to create the game
         global level
         level += 1
-        self.brickArray = []
-        self.brickAnimation = []
-        self.animationDir = 1
-        self.remakeStage()
-
-        self.ballArray = []
+        self.brickArray = []        # Stores the bricks in the game
+        self.brickAnimation = []    # When a brick is destroyed it goes to a brick animation array before it is completely destroyed
+        self.animationDir = 1       # A switch for the direction of the brick animation 1/-1
+        self.remakeStage()          # Recreates the stage with brick count depending on the level
 
         self.skydome = Skysphere()
-        self.platform = Platform(Point(0, 0, 0), self.meshmodel_container)
-        self.frame = Frame(self.platform.pos, 25, 21)
+        self.platform = Platform(Point(0, 0, 0), self.meshmodel_container)  # Container
+        self.frame = Frame(self.platform.pos, 25, 21)                       # Frame for the stage
 
         self.ball = Ball(Point(self.platform.pos.x, self.platform.pos.y + self.platform.h / 2 + 0.5, 0), 0.5, self.texture_amethyst_diffuse, self.texture_amethyst_specular)
-        self.ballArray.append(self.ball)
-
-        self.pauseTime = 0.0
 
         # check framerate, use for optimizing
         self.fr_ticker = 0.0
         self.fr_sum = 0.0
 
-        # Start intro with bezier motion
+        # Start intro with bezier motion, positions represent the path of the motion
         self.intro = Intro()
         self.bezierPositions = [Point(0.0, 4.0, 30), Point(50.0, 20.0, 50.0), Point(50.0, 20.0, -100.0), Point(-100.0, 20.0, -100.0),
                                 Point(-100.0, 20.0, 50.0), Point(-50.0, 2.0, 50.0), Point(100.0, 2.0, 50.0), Point(100.0, 2.0, -60.0),
                                 Point(-120.0, 2.0, -60.0), Point(-30.0, 2.0, 30.0), Point(50.0, 20.0, 50.0), Point(0.0, 4.0, 30)]
+        
+        # Added a bexier movement for the look-at position, that is look that the container when passing it
         self.introLook = Intro()
         self.bezierLookPosit = [Point(0.0, 11.0, 0), Point(0.0, 11.0, 0), Point(0.0, 11.0, 0), Point(0.0, 11.0, 0), Point(0.0, 11.0, 0),
                                 Point(0.0, 0.0, 0), Point(0.0, 0.0, 0), Point(0.0, 0.0, 0), Point(0.0, 0.0, 0), Point(0.0, 0.0, 0),
                                 Point(0.0, 11.0, 0), Point(0.0, 11.0, 0)]
-        self.lightPos = self.view_matrix.eye
 
-        # Restart level
+        # Restart level variables
         self.restartBezierBase = [Point(0.0, 4.0, 30.0), Point(5.0, 100.0, 30.0), Point(5.0, 100.0, -100.0),
                                 Point(-5.0, -100.0, -100.0), Point(-5.0, -50.0, 100.0), Point(0.0, 4.0, 30.0)]
         self.restartlevel = Motion(10.0)
@@ -110,27 +111,24 @@ class GraphicsProgram3D:
         self.lost = False
         self.lives = 3
 
-        # Spotlight
+        # Red spotlight that moves with bezier motion (loop), gives the stage a cool look
         self.lightMotion = Motion(10.0)
         self.lightMotionArray = [Point(100.0, -100.0, 75), Point(100.0, 100.0, 75), Point(-100.0, 100.0, 75), Point(-100.0, -100.0, 75), Point(100.0, -100.0, 75)]
         self.spotlightPos = Point(100.0, -100.0, 75)
         self.spotlightColor = Color(0.9, 0.1, 0.1)
-
-        # ### used for testing here
-        # self.sphere = Sphere(24, 48)
-        # self.sprite = Sprite()
-        self.initLoad = True
         
     def update(self):
         delta_time = self.clock.tick() / 1000.0
+        # Pauses the game, lets the delta_time tick so it won't be drastically changed when unpausing
         if self.pause_game:
             return
 
+        # Does the intro animation, makes sure nothing else can happen until it's complete
         if not self.intro.animationFinished:
             self.view_matrix.look(self.intro.bezierMotionAnimation(delta_time, self.bezierPositions), self.introLook.bezierMotionAnimation(delta_time, self.bezierLookPosit), Vector(0, 1, 0))
-            self.lightPos = self.view_matrix.eye
             return
 
+        # Winning state, restarts the level with a cool transition, cannot do anything while this is happening
         if self.win:
             if not self.restartlevel.animationFinished:
                 if self.view_matrix.eye.z <= 0 and not self.stageDrawn:
@@ -148,6 +146,7 @@ class GraphicsProgram3D:
                 self.restartBezierMovement = []
                 self.restartPlatformMovement= []
         
+        # Losing state, restarts the level with a cool transition, cannot do anything while this is happening
         if self.lost:
             if not self.restartlevel.animationFinished:
                 if self.view_matrix.eye.z <= 0 and not self.stageDrawn:
@@ -164,6 +163,7 @@ class GraphicsProgram3D:
                 self.restartBezierMovement = []
                 self.restartPlatformMovement= []
         
+        # Monitors if the ball goes below the container, then either lose or lose a life
         if self.ball.pos.y <= 0:
             self.lives -= 1
             if self.lives > 0:
@@ -175,17 +175,20 @@ class GraphicsProgram3D:
                 level = 1
                 self.ball.reset(Point(0, self.platform.pos.y + self.platform.h / 2 + 0.5, 0))
 
+        # Checks if the stage is clear, then goes to the next level (max 3)
         if len(self.brickArray) == 0:
             self.win = True
             self.stageDrawn = False
             if level < 3:
                 level += 1
         
+        # Makes the spotlight bezier movement run in loops
         self.spotlightPos = self.lightMotion.bezierMotionAnimation(delta_time, self.lightMotionArray)
         if self.lightMotion.animationFinished:
             self.lightMotion.animationTime = 0
             self.lightMotion.animationFinished = False
 
+        # Uncomment to see the framerate
         # self.fr_sum += delta_time
         # self.fr_ticker += 1
         # if self.fr_sum > 1.0:
@@ -193,6 +196,7 @@ class GraphicsProgram3D:
         #     self.fr_sum = 0
         #     self.fr_ticker = 0
 
+        # Updates the animation list, removes the brick if animation is complete
         tmpAnimList = []
         for brick in self.brickAnimation:
             brick.updateAnimation(delta_time)
@@ -200,8 +204,10 @@ class GraphicsProgram3D:
                 tmpAnimList.append(brick)
         self.brickAnimation = tmpAnimList
         
+        # Updates the ball position
         self.ball.update(self.platform.pos, delta_time)
 
+        # Checks for collision and then updates the ball, moves bricks to animation before destruction
         tmpList = []
         for brick in self.brickArray:
             self.ball = brick.collision(self.ball, delta_time)
@@ -215,6 +221,7 @@ class GraphicsProgram3D:
 
         self.brickArray = tmpList
 
+        # Platform and frame collision detection
         self.ball = self.platform.collision(self.ball, delta_time)
         self.ball = self.frame.collision(self.ball, delta_time)
 
@@ -240,7 +247,7 @@ class GraphicsProgram3D:
         
         self.model_matrix.load_identity()
 
-        #### Skydome
+        #### Skydome, drawn without depth testing first before eveything else is drawn
         glDisable(GL_DEPTH_TEST)
         self.sprite_shader.use()
         self.sprite_shader.set_projection_matrix(self.projection_matrix.get_matrix())
@@ -273,29 +280,31 @@ class GraphicsProgram3D:
 
         self.shader.set_view_matrix((self.view_matrix.get_matrix()))
 
-        # Light
-        # self.shader.set_light_position(Point(0.0, 20.0, 10.0))
-        self.shader.set_light_position(self.lightPos)
+        # Main light, stays with the eye position
+        self.shader.set_light_position(self.view_matrix.eye)
         self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_specular(1.0, 1.0, 1.0)
 
-        # SpotLight
+        # SpotLight, moves in from of the stage, with a shiny red glow
         self.shader.set_spotlight_position(self.spotlightPos)
         self.shader.set_spotlight_diffuse(self.spotlightColor)
         self.shader.set_spotlight_specular(self.spotlightColor)
 
-
         self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_material_shininess(5.0)
         
+        # Displays the platform and the fram
         self.frame.display(self.model_matrix, self.shader)
         self.platform.display(self.model_matrix, self.shader)
 
+        # Displays the ball
         self.ball.display(self.model_matrix, self.shader)
 
+        # Displayes all non destroyed bricks
         for brick in self.brickArray:
             brick.display(self.model_matrix, self.shader)
 
+        # Displays the bricks that are animated before destruction
         for brick in self.brickAnimation:
             brick.display(self.model_matrix, self.shader)
 
@@ -337,6 +346,7 @@ class GraphicsProgram3D:
         #OUT OF GAME LOOP
         pygame.quit()
 
+    # Does the restart animation for win/lose
     def restartAnimation(self, delta_time):
         if not self.setRestart:
             self.restartBezierMovement.append(self.view_matrix.eye)
@@ -351,6 +361,7 @@ class GraphicsProgram3D:
         self.view_matrix.look(self.restartlevel.bezierMotionAnimation(delta_time, self.restartBezierMovement), Point(0.0, 11.0, 0), Vector(0, 1, 0))
         self.platform.pos = self.restartPlatform.bezierMotionAnimation(delta_time, self.restartPlatformMovement)
 
+    # Remakes the stage given the current level
     def remakeStage(self):
         y_coord = 20
         for _ in range(level):
